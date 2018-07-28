@@ -247,6 +247,7 @@
     var bottom_bar = new Image();
     bottom_bar.src = "assets/img/base.png";
 
+    //TODO: link up NEAT with main game engine
     
     var bird = new MoveSprite("assets/img/bird.png");
     bird.x = myCanvas.width/3;
