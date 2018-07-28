@@ -11,6 +11,7 @@
     var pipes = [];
     
     // Sprite function
+    // -------------------------------------------------------------------------------------------
     function MoveSprite(img){
         this.x = 0;
         this.y = 0;
@@ -49,7 +50,9 @@
         ctx.restore();
     }
 
+    // Functions ()
     // check if bird touched anything
+    // -------------------------------------------------------------------------------------------
     function TouchedThings(thing1, thing2){
         if (!thing1.visible || !thing2.visible)
             return false;
@@ -63,7 +66,7 @@
         return true;
     }
 
-    // manual
+    // flap the bird (human)
     function ManualFlap(MyEvent){
         // toggle spacebar to flap
         if (MyEvent.key === ' ' ||  MyEvent.key === 'Spacebar'){
@@ -73,7 +76,8 @@
                     break;
                 }
                 case 'running': {
-                    bird.velocity_y = jump_amt;
+                    // only one bird is running during manual mode
+                    bird[0].velocity_y = jump_amt;
                     break;
                 }
                 case 'over': if (new Date() - time_game_last_running > 1000){
@@ -86,8 +90,8 @@
         MyEvent.preventDefault();
     }
 
-    // by Ai
-    function SignalFlap(MyEvent){
+    // flap the bird (Ai)
+    function SignalFlap(){
         // toggle spacebar to flap
         switch (game_mode){
             case 'prestart': {
@@ -104,7 +108,6 @@
                 break;
             }
         }
-        MyEvent.preventDefault();
     }
 
     // add player toggle (spacebar)
@@ -121,6 +124,15 @@
         }
     }
 
+    function bird_tilt_angle(){
+        if (bird.velocity_y < 0){
+            bird.angle = -15;
+        }else if (bird.angle < 70){
+            bird.angle = bird.angle + 4;
+        }
+    }
+
+    // Game layout control
     function add_pipe(x_pos, top_of_gap, gap_width){
         var top_pipe = new MoveSprite();
         top_pipe.MyImg = pipe_piece;
@@ -136,14 +148,6 @@
         bottom_pipe.y = top_of_gap + gap_width;
         bottom_pipe.velocity_x = pipe_speed;
         pipes.push(bottom_pipe);
-    }
-
-    function bird_tilt_angle(){
-        if (bird.velocity_y < 0){
-            bird.angle = -15;
-        }else if (bird.angle < 70){
-            bird.angle = bird.angle + 4;
-        }
     }
 
     function show_pipes(){
@@ -201,7 +205,7 @@
         add_pipe(3000, 100,  80);
         add_pipe(3300, 250,  80);
         add_pipe(3600,  50,  60);
-
+    
         var finish_line = new MoveSprite("assets/img/endline.png");
         finish_line.x = 3900;
         finish_line.velocity_x = pipe_speed;
@@ -212,6 +216,7 @@
     pipe_piece.onload = add_all_pipes;
     pipe_piece.src = "assets/img/pipe.png";
 
+    // center control
     function DrawFame(){
         ctx.clearRect(0,0,myCanvas.width,myCanvas.height);
         bird.Run_Frame_Activity();
@@ -238,12 +243,15 @@
         }
     }
 
+    //construct the bottom bar
     var bottom_bar = new Image();
     bottom_bar.src = "assets/img/base.png";
 
+    
     var bird = new MoveSprite("assets/img/bird.png");
     bird.x = myCanvas.width/3;
     bird.y = myCanvas.height/2;
+    
 
     //run the engine at certain fps
     setInterval(DrawFame, 1000/fps);

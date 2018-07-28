@@ -12,14 +12,17 @@
  initalize weights: 1/sqrt(n), where n is the number of hidden neurons
 */
 
-
-var numModels = 50;
+// parameters
+var numModels = 50; //even number
 var numInputs = 3;
-var numHiddenNeurons = 7;
+var numHiddenNeurons = 7; //starting neurons
 var numOutputs = 1;
 
+// control parameters
 var mutateProbability = 0.15;
-var absRange = 1/Math.sqrt(numHiddenNeurons);
+var absRange = 1/Math.sqrt(numHiddenNeurons); //for weight initialization
+
+var generation = 0;
 
 var model_pool = [];
 for (var i = 0; i < numModels; i++){
@@ -80,7 +83,7 @@ function Model(hidden_layer,output_layer){
     this.outputLayer = output_layer;
     
     this.isAlive = true;
-    this.fitness = 0;
+    this.fitness = -100;
 }
 
 Model.prototype.feedforward = function(inputArray){
@@ -118,6 +121,7 @@ Model.prototype.feedforward = function(inputArray){
     return final_node_output;
 }
 
+// update fitness
 Model.prototype.updateFitness = function(){
     if (this.isAlive)
         this.fitness += 1;
@@ -127,11 +131,19 @@ Model.prototype.updateFitness = function(){
 // ---------------------------------------------------------------------------------------------------------------------------------------
 // genetic part (swap the hidden layer)
 function crossover(modelA_idx, modelB_idx){
+
     var hiddenLayerA = model_pool[modelA_idx].hiddenLayer;
     var hiddenLayerB = model_pool[modelB_idx].hiddenLayer;
 
-    model_pool[modelA_idx].hiddenLayer = hiddenLayerB;
-    model_pool[modelB_idx].hiddenLayer = hiddenLayerA;
+    var outputLayerA = model_pool[modelA_idx].outputLayer;
+    var outputLayerB = model_pool[modelB_idx].outputLayer;
+
+    var data = {
+        'weights1': [hiddenLayerA, outputLayerB],
+        'weights2': [hiddenLayerB, outputLayerA]
+    };
+
+    return data;
 }
 
 function mutate(layer){
@@ -180,16 +192,82 @@ function predict(bird_height, dist_to_pipe, pipe_height, modex){
 //called when all birds died
 function endgameHandler(){
 
+    // calculate total fitness
+    var total_fitness = 0;
+    var newWeights = [];
+
+    var i;
+    for(i = 0; i < model_pool.length; i++){
+        total_fitness += model_pool[i].fitness;
+    }
+
+    // create cummlative function
+    for (i = 0; i < model_pool.length; i++){
+        model_pool[i].fitness /= total_fitness;
+
+        if (i > 0){
+            model_pool[i].fitness += model_pool[i-1].fitness;
+        }
+    }
+
+    // selection
+    for (i = 0; i < model_pool.length/2; i++){
+        prob1 = Math.random();
+        prob2 = Math.random();
+
+        var cross_idx1 = -1;
+        var cross_idx2 = -1
+
+        var j;
+        for (j = 0; j < model_pool.length; j++){
+            if (model_pool[j].fitness >= prob1){
+                cross_idx1 = j;
+                break;    
+            }
+        }
+        
+        var k;
+        for (k = 0; k < model_pool.length; k++){
+            if (model_pool[k].fitness >= prob2){
+                cross_idx2 = k;
+                break;
+            }
+        }
+
+        var weightSet = crossover(cross_idx1, cross_idx2);
+
+        weight1_part1 = mutate(weightSet['weights1'][0]);
+        weight1_part2 = mutate(weightSet['weights1'][1]);
+
+        weight2_part1 = mutate(weightSet['weights2'][0]);
+        weight2_part2 = mutate(weightSet['weights2'][1]);
+
+        newWeights.append([weight1_part1, weight1_part2]);
+        newWeights.append([weight2_part1, weight2_part2]);
+    }
+
+    //update new weights to model_pool, reset fitness
+    for (i = 0; i < newWeights.length; i++){
+        model_pool[i].fitness = -100;
+        model_pool[i].hidden_layer = newWeights[i][0];
+        model_pool[i].output_layer = newWeights[i][1];
+    }
+
+    //update generation
+    generation += 1;
 }
 
 
 function testFunc(){
 
+    /*
     var hiddenlayer = construct_hidden(numInputs, numHiddenNeurons);
     var outputlayer = construct_output(numOutputs, numHiddenNeurons);
 
     test = new Model(hiddenlayer,outputlayer);
 
     test.feedforward([3,3,3]);
-
+    */
+    console.log("flapping")
+    SignalFlap();
 }
