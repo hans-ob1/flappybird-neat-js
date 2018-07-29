@@ -25,10 +25,6 @@
         this.visible = true;
         this.flipV = false;
         this.flipH = false;
-
-        // bird param
-        this.isDead = false;
-        this.score = 0;
     }
 
     MoveSprite.prototype.Run_Frame_Activity = function(){
@@ -47,8 +43,7 @@
         }
         
         //update at the end of cycle
-        if (!this.isDead)
-            this.x = this.x + this.velocity_x;
+        this.x = this.x + this.velocity_x;
         this.y = this.y + this.velocity_y;
         
         //restore back for next drawing
@@ -96,7 +91,7 @@
     }
 
     // flap the bird (Ai)
-    function SignalFlap(idx){
+    function SignalFlap(){
         // toggle spacebar to flap
         switch (game_mode){
             case 'prestart': {
@@ -104,7 +99,9 @@
                 break;
             }
             case 'running': {
-                bird[idx].velocity_y = jump_amt;
+                for (var i; i < bird.length; i++){
+                    bird[i].velocity_y = jump_amt;
+                }
                 break;
             }
             case 'over': if (new Date() - time_game_last_running > 1000){
@@ -121,15 +118,13 @@
     function bird_speedcontrol(){
 
         for (var i = 0; i < bird.length; i++){
-            if (!bird[i].isDead){
-                if (bird[i].velocity_y < max_fallspeed){
-                    bird[i].velocity_y = bird[i].velocity_y + acceleration;
-                }
+            if (bird[i].velocity_y < max_fallspeed){
+                bird[i].velocity_y = bird[i].velocity_y + acceleration;
+            }
 
-                if (bird[i].y > myCanvas.height - bird[i].MyImg.height){
-                    bird[i].velocity_y = 0;
-                    bird[i].isDead = true;
-                }
+            if (bird[i].y > myCanvas.height - bird[i].MyImg.height){
+                bird[i].velocity_y = 0;
+               // game_mode = 'over';
             }
         }
     }
@@ -137,17 +132,15 @@
     function bird_tilt_angle(){
 
         for (var i = 0; i < bird.length; i++){
-            if (!bird[i].isDead){
-                if (bird[i].velocity_y < 0){
-                    bird[i].angle = -15;
-                }else if (bird[i].angle < 70){
-                    bird[i].angle = bird[i].angle + 4;
-                }
+            if (bird[i].velocity_y < 0){
+                bird[i].angle = -15;
+            }else if (bird[i].angle < 70){
+                bird[i].angle = bird[i].angle + 4;
             }
         }
     }
 
-    // Game layout
+    // Game layout control
     function add_pipe(x_pos, top_of_gap, gap_width){
         var top_pipe = new MoveSprite();
         top_pipe.MyImg = pipe_piece;
@@ -172,57 +165,24 @@
     }
 
     function gameover_checker(){
-
-        var numDead = 0;
-
-        for (var i = 0; i < bird.length; i++){
-    
-            if (!bird[i].isDead){
-                for (var j = 0; j < pipes.length; j++){
-                    if (TouchedThings(bird[i], pipes[j])){
-                        bird[i].isDead = true;
-                        numDead += 1;
-                        break;
-                    }
-                }
-            }else{
-                numDead += 1;
-            }
-        }
-    
-        if (numDead === bird.length){
-            game_mode = "over";
-        }
-    }
-
-    function update_score(){
-        for (var i = 0; i < bird.length; i++){
-
-            if (!bird[i].isDead){
-                var temp = 0;
-                for (var j = 0; j < pipes.length; j++){
-                    if (pipes[j].x < bird[i].x)
-                        temp = temp + 0.5;
-                }
-                bird[i].score = temp;
-            }
+        for (var i = 0; i < pipes.length; i++){
+            if (TouchedThings(bird[0], pipes[i]))
+                game_mode = "over";
         }
     }
 
     function show_gameover(){
-
-        var displayScore = [];
-        for (var i = 0; i < bird.length; i++){
-            displayScore.push(bird[i].score);
+        var score = 0;
+        for (var i = 0; i < pipes.length; i++){
+            if (pipes[i].x < bird[0].x)
+                score = score + 0.5;
         }
-
-        console.log(displayScore);
 
         ctx.font = "30px Arial";
         ctx.fillStyle = "green";
         ctx.textAlign = "center";
         ctx.fillText("Game over", myCanvas.width/2, 100);
-        //ctx.fillText("Score: " + score[0], myCanvas.width/2, 150);
+        ctx.fillText("Score: " + score, myCanvas.width/2, 150);
         ctx.font = "20px Arial";
         ctx.fillText("Click or press any key to play again", myCanvas.width/2, 300);
     }
@@ -234,7 +194,6 @@
 
     function reset_game(){
         for(var i = 0; i < bird.length; i++){
-            bird[i].isDead = false;
             bird[i].y = myCanvas.height/2;
             bird[i].angle = 0;
         }
@@ -286,7 +245,6 @@
                 show_pipes();
                 bird_tilt_angle();
                 bird_speedcontrol();
-                update_score();
                 gameover_checker();
                 break;
             }
@@ -309,6 +267,12 @@
         bird[i].x = myCanvas.width/3;
         bird[i].y = myCanvas.height/2;
     }
+
+    /*
+    var bird = new MoveSprite("assets/img/bird.png");
+    bird.x = myCanvas.width/3;
+    bird.y = myCanvas.height/2;
+    */
 
     //run the engine at certain fps
     setInterval(DrawFame, 1000/fps);
