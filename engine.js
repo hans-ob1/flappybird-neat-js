@@ -1,6 +1,6 @@
     // define game parameters
     var ctx = myCanvas.getContext("2d");
-    var fps = 40;
+    var fps = 50;
     var jump_amt = -10;
     var max_fallspeed = +10;
     var acceleration = 1;
@@ -8,6 +8,9 @@
     var game_mode = 'prestart';
     var time_game_last_running;
     var bottom_bar_offset = 0;
+
+    //TODO: link up NEAT with main game engine
+    var bird = [];
     var pipes = [];
     
     // Sprite function
@@ -49,6 +52,7 @@
         //update at the end of cycle
         if (!this.isDead)
             this.x = this.x + this.velocity_x;
+
         this.y = this.y + this.velocity_y;
         
         //restore back for next drawing
@@ -129,7 +133,11 @@
                 if (bird[i].y > myCanvas.height - bird[i].MyImg.height){
                     bird[i].velocity_y = 0;
                     bird[i].isDead = true;
+                }else if(bird[i].y < 0){
+                    bird[i].velocity_y = 0;
+                    bird[i].isDead = true;                    
                 }
+
             }
         }
     }
@@ -189,6 +197,8 @@
                 numDead += 1;
             }
         }
+
+        console.log(numDead);
     
         if (numDead === bird.length){
             game_mode = "over";
@@ -302,9 +312,7 @@
     var bottom_bar = new Image();
     bottom_bar.src = "assets/img/base.png";
 
-    //TODO: link up NEAT with main game engine
-    var bird = []
-    for (var i = 0; i < 5; i++){
+    for (var i = 0; i < 100; i++){
         bird.push(new MoveSprite("assets/img/bird.png"));
         bird[i].x = myCanvas.width/3;
         bird[i].y = myCanvas.height/2;

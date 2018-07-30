@@ -13,10 +13,12 @@
 */
 
 // parameters
-var numModels = 50; //even number
+var numModels = 10; //even number
 var numInputs = 3;
 var numHiddenNeurons = 7; //starting neurons
 var numOutputs = 1;
+var CANVASHEIGHT;
+var MAXPIPEDIST = 500;
 
 // control parameters
 var mutateProbability = 0.15;
@@ -103,6 +105,9 @@ Model.prototype.feedforward = function(inputArray){
         }
 
         //sigmoid
+
+        //console.log(1/(1+Math.exp(-sum_of_weights)));
+
         hidden_neuron_output.push(1/(1+Math.exp(-sum_of_weights)));
     }
 
@@ -123,8 +128,7 @@ Model.prototype.feedforward = function(inputArray){
 
 // update fitness
 Model.prototype.updateFitness = function(){
-    if (this.isAlive)
-        this.fitness += 1;
+    this.fitness += 1;
 }
 
 
@@ -175,7 +179,9 @@ function predict(bird_height, dist_to_pipe, pipe_height, modex){
     // normalize all parameters
     var birdHeight = Math.min(CANVASHEIGHT,bird_height)/CANVASHEIGHT - absRange;
     var pipeDist = dist_to_pipe / MAXPIPEDIST - absRange;
-    var pipeHeight = Math.min(CANVASHEIGHT, pipe_height)/CANVASHEIGHT - absRange;
+    var pipeHeight = Math.min(CANVASHEIGHT, pipe_height)/CANVASHEIGHT -absRange;
+
+    console.log([birdHeight, pipeDist, pipeHeight]);
 
     var input_to_model = [birdHeight,pipeDist,pipeHeight]
     var output_prob = model_pool[modex].feedforward(input_to_model);
@@ -184,6 +190,8 @@ function predict(bird_height, dist_to_pipe, pipe_height, modex){
     if (output_prob[0] >= 0.5){
         return 1
     }
+
+    //console.log(output_prob[0]);
 
     //dont flap
     return 0;
@@ -242,8 +250,8 @@ function endgameHandler(){
         weight2_part1 = mutate(weightSet['weights2'][0]);
         weight2_part2 = mutate(weightSet['weights2'][1]);
 
-        newWeights.append([weight1_part1, weight1_part2]);
-        newWeights.append([weight2_part1, weight2_part2]);
+        newWeights.push([weight1_part1, weight1_part2]);
+        newWeights.push([weight2_part1, weight2_part2]);
     }
 
     //update new weights to model_pool, reset fitness
@@ -259,15 +267,60 @@ function endgameHandler(){
 
 
 function testFunc(){
+    
+    if (game_mode != 'running'){
+        game_mode = 'running';
+    }
+    
 
-    /*
-    var hiddenlayer = construct_hidden(numInputs, numHiddenNeurons);
-    var outputlayer = construct_output(numOutputs, numHiddenNeurons);
+    var control = myCanvas.getContext("2d");
+    CANVASHEIGHT = 480;
 
-    test = new Model(hiddenlayer,outputlayer);
+    //console.log(CANVASHEIGHT);
 
-    test.feedforward([3,3,3]);
-    */
-    console.log("flapping")
-    SignalFlap();
+    var i;
+    var totalDead = 0;
+
+    for (i = 0; i < model_pool.length; i++){
+
+        if (!bird[i].isDead){
+            var heightOfBird = bird[i].y;
+            var nearestPipeDist;
+            var nearestPipeHeight;
+            for (var j = 0; j < pipes.length; j++){
+                if (j%2===1){
+                    if (pipes[j].x > bird[i].x){
+                        nearestPipeDist = pipes[j].x - bird[i].x;
+                        nearestPipeHeight = pipes[j].y;
+                        break;
+                    }
+                }
+            }
+
+           // console.log([heightOfBird, nearestPipeDist, nearestPipeHeight]);
+
+
+            if(predict(heightOfBird,nearestPipeDist,nearestPipeHeight,i) === 1){
+                console.log("something");
+                SignalFlap(i);
+            }
+
+            model_pool[i].updateFitness();
+
+        }else{
+            totalDead += 1;
+        }
+
+    }
+
+    // gamehandler
+    if (totalDead === model_pool.length){
+        endgameHandler();
+        console.log(generation);
+        reset_game();
+        game_mode = 'over';
+    }
+
 }
+
+setInterval(testFunc, 1000/25);
