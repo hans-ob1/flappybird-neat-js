@@ -13,6 +13,7 @@
     var numBirds = 100;
     var bird = [];
     var pipes = [];
+    var highscore = 0;
     
     // Sprite function
     // -------------------------------------------------------------------------------------------
@@ -191,6 +192,13 @@
                     if (TouchedThings(bird[i], pipes[j])){
                         bird[i].isDead = true;
                         numDead += 1;
+
+                        //check if hits the finishing line (100 bonus points)
+                        if(j === pipes.length -1 && RunAI){
+                            bird[i].score += 100;
+                            exportout(i);
+                        }
+
                         break;
                     }
                 }
@@ -199,7 +207,7 @@
             }
         }
 
-        console.log(numDead);
+        //console.log(numDead);
     
         if (numDead === bird.length){
             game_mode = "over";
@@ -207,6 +215,7 @@
     }
 
     function update_score(){
+
         for (var i = 0; i < bird.length; i++){
 
             if (!bird[i].isDead){
@@ -216,9 +225,24 @@
                         temp = temp + 0.5;
                 }
                 bird[i].score = temp;
+
+                if (temp > highscore)
+                    highscore = temp;
             }
         }
+
+        document.getElementById("#scorebox").innerHTML = highscore.toString();
     }
+
+    function prestart_screen(){
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "center";
+        ctx.fillText("Hit Spacebar to Start", myCanvas.width/2, 200);
+        ctx.font = "20px Arial";
+    }
+
+
 
     function show_gameover(){
 
@@ -227,15 +251,18 @@
             displayScore.push(bird[i].score);
         }
 
-        console.log(displayScore);
+        highscore = Math.max.apply(null,displayScore);
+        document.getElementById("#scorebox").innerHTML = highscore.toString();
+
+        //console.log(displayScore);
 
         ctx.font = "30px Arial";
         ctx.fillStyle = "green";
         ctx.textAlign = "center";
-        ctx.fillText("Game over", myCanvas.width/2, 100);
+        ctx.fillText("Game over", myCanvas.width/2, 200);
         //ctx.fillText("Score: " + score[0], myCanvas.width/2, 150);
         ctx.font = "20px Arial";
-        ctx.fillText("Click or press any key to play again", myCanvas.width/2, 300);
+        ctx.fillText("Try Again", myCanvas.width/2, 250);
     }
 
     function display_bottom(){
@@ -252,6 +279,8 @@
 
         pipes=[];
         add_all_pipes();
+        highscore = 0;
+        document.getElementById("#scorebox").innerHTML = highscore.toString();
     }
 
     function add_all_pipes(){
@@ -298,6 +327,7 @@
 
         switch(game_mode){
             case 'prestart': {
+                prestart_screen();
                 break;
             }
             case 'running':{

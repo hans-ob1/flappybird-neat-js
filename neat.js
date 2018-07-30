@@ -269,6 +269,11 @@ function toggleAI(){
     }
 }
 
+function exportout(idx){
+    RunAI = false;
+    console.log(model_pool[i].hidden_layer);
+    console.log(model_pool[i].output_layer);
+}
 
 function ai_engine(){
 

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"></script>
 </head>
 
 <style>
@@ -64,12 +63,12 @@
         <div class="game-container">
             <canvas id="myCanvas" width=320 height=480 style="background:url('assets/img/background.png'); background-size: 100%; height: 95%"></canvas>
             <div class="controls">
-                <div class="score-container">0</div>
+                <div id="#scorebox" class="score-container">0</div>
+                <!--div class="button-container">
+                    <input class="btn btn-info btn-lg" type ="button" value ="Start Game" onclick="">
+                </div -->
                 <div class="button-container">
-                    <a href="#" class="btn btn-info btn-lg" role="button">Start Game</a>
-                </div>
-                <div class="button-container">
-                    <a href="#" class="btn btn-danger btn-lg" role="button" onclick="toggleAI();">Run AI</a>
+                    <input class="btn btn-danger btn-lg" type ="button" value ="Run AI" onclick="runNeat(this);">
                 </div>          
             </div>
         </div>
@@ -79,6 +78,18 @@
 <footer>
     <script src="engine.js"></script>
     <script src="neat.js"></script>
+
+    <script>
+        function runNeat(objButton){
+            if (objButton.value === 'Run AI')
+                objButton.value = 'Stop AI';
+            else
+                objButton.value = 'Run AI';
+            
+            //toggle AI
+            toggleAI();
+        }
+    </script>
 </footer>
 
 </html>
