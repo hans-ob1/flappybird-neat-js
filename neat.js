@@ -12,12 +12,14 @@
  initalize weights: 1/sqrt(n), where n is the number of hidden neurons
 */
 
+// control
+var RunAI = false;
+
 // parameters
-var numModels = 10; //even number
 var numInputs = 3;
 var numHiddenNeurons = 7; //starting neurons
 var numOutputs = 1;
-var CANVASHEIGHT;
+var CANVASHEIGHT = myCanvas.height;
 var MAXPIPEDIST = 500;
 
 // control parameters
@@ -27,10 +29,9 @@ var absRange = 1/Math.sqrt(numHiddenNeurons); //for weight initialization
 var generation = 0;
 
 var model_pool = [];
-for (var i = 0; i < numModels; i++){
+for (var i = 0; i < numBirds; i++){
     model_pool.push(new Model(construct_hidden(numInputs,numHiddenNeurons), construct_output(numOutputs,numHiddenNeurons)));
 }
-
 
 
 // random number generator based on number of hidden neuron
@@ -104,10 +105,7 @@ Model.prototype.feedforward = function(inputArray){
             sum_of_weights += this.hiddenLayer[i][j]*inputArray[j];
         }
 
-        //sigmoid
-
-        //console.log(1/(1+Math.exp(-sum_of_weights)));
-
+        // activation
         hidden_neuron_output.push(1/(1+Math.exp(-sum_of_weights)));
     }
 
@@ -119,7 +117,7 @@ Model.prototype.feedforward = function(inputArray){
             sum_of_outputs += this.outputLayer[i][j]*hidden_neuron_output[j];
         }
 
-        //activation function
+        // activation
         final_node_output.push(1/(1+Math.exp(-sum_of_outputs)));
     }
 
@@ -127,8 +125,8 @@ Model.prototype.feedforward = function(inputArray){
 }
 
 // update fitness
-Model.prototype.updateFitness = function(){
-    this.fitness += 1;
+Model.prototype.updateFitness = function(birdScore){
+    this.fitness += 1 + birdScore;
 }
 
 
@@ -181,17 +179,15 @@ function predict(bird_height, dist_to_pipe, pipe_height, modex){
     var pipeDist = dist_to_pipe / MAXPIPEDIST - absRange;
     var pipeHeight = Math.min(CANVASHEIGHT, pipe_height)/CANVASHEIGHT -absRange;
 
-    console.log([birdHeight, pipeDist, pipeHeight]);
+    // console.log([birdHeight, pipeDist, pipeHeight]);
 
     var input_to_model = [birdHeight,pipeDist,pipeHeight]
     var output_prob = model_pool[modex].feedforward(input_to_model);
 
     //flap
     if (output_prob[0] >= 0.5){
-        return 1
+        return 1;
     }
-
-    //console.log(output_prob[0]);
 
     //dont flap
     return 0;
@@ -265,62 +261,64 @@ function endgameHandler(){
     generation += 1;
 }
 
-
-function testFunc(){
-    
-    if (game_mode != 'running'){
-        game_mode = 'running';
+function toggleAI(){
+    if (!RunAI){
+        RunAI = true;
+    }else{
+        RunAI = false;
     }
-    
-
-    var control = myCanvas.getContext("2d");
-    CANVASHEIGHT = 480;
-
-    //console.log(CANVASHEIGHT);
-
-    var i;
-    var totalDead = 0;
-
-    for (i = 0; i < model_pool.length; i++){
-
-        if (!bird[i].isDead){
-            var heightOfBird = bird[i].y;
-            var nearestPipeDist;
-            var nearestPipeHeight;
-            for (var j = 0; j < pipes.length; j++){
-                if (j%2===1){
-                    if (pipes[j].x > bird[i].x){
-                        nearestPipeDist = pipes[j].x - bird[i].x;
-                        nearestPipeHeight = pipes[j].y;
-                        break;
-                    }
-                }
-            }
-
-           // console.log([heightOfBird, nearestPipeDist, nearestPipeHeight]);
+}
 
 
-            if(predict(heightOfBird,nearestPipeDist,nearestPipeHeight,i) === 1){
-                console.log("something");
-                SignalFlap(i);
-            }
+function ai_engine(){
 
-            model_pool[i].updateFitness();
-
-        }else{
-            totalDead += 1;
+    if(RunAI){
+        if (game_mode != 'running'){
+            game_mode = 'running';
         }
 
-    }
+        var i;
+        var totalDead = 0;
 
-    // gamehandler
-    if (totalDead === model_pool.length){
-        endgameHandler();
-        console.log(generation);
-        reset_game();
-        game_mode = 'over';
+        for (i = 0; i < model_pool.length; i++){
+
+            if (!bird[i].isDead){
+                var heightOfBird = bird[i].y;
+                var nearestPipeDist;
+                var nearestPipeHeight;
+                for (var j = 0; j < pipes.length; j++){
+                    if (j%2===1){
+                        if (pipes[j].x > bird[i].x){
+                            nearestPipeDist = pipes[j].x - bird[i].x;
+                            nearestPipeHeight = pipes[j].y;
+                            break;
+                        }
+                    }
+                }
+
+                // run the prediction
+                if(predict(heightOfBird,nearestPipeDist,nearestPipeHeight,i) === 1){
+                    SignalFlap(i);
+                }
+
+                // update fitness
+                model_pool[i].updateFitness(bird[i].score);
+
+            }else{
+                totalDead += 1;
+            }
+
+        }
+
+        // if all die, handle them
+        if (totalDead === model_pool.length){
+            endgameHandler();
+            console.log(generation);
+            reset_game();
+            game_mode = 'over';
+        }
     }
 
 }
 
-setInterval(testFunc, 1000/25);
+//setInterval(testFunc, 1000/25);

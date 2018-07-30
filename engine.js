@@ -10,6 +10,7 @@
     var bottom_bar_offset = 0;
 
     //TODO: link up NEAT with main game engine
+    var numBirds = 100;
     var bird = [];
     var pipes = [];
     
@@ -254,6 +255,7 @@
     }
 
     function add_all_pipes(){
+        // set the number of pipes (100)
         add_pipe(500,  100, 140);
         add_pipe(800,   50, 140);
         add_pipe(1000, 250, 140);
@@ -267,9 +269,11 @@
         add_pipe(3000, 100,  80);
         add_pipe(3300, 250,  80);
         add_pipe(3600,  50,  60);
+        add_pipe(3800,  100,  60);
+        add_pipe(4000,  150,  60);
     
         var finish_line = new MoveSprite("assets/img/endline.png");
-        finish_line.x = 3900;
+        finish_line.x = 4300;
         finish_line.velocity_x = pipe_speed;
         pipes.push(finish_line);        
     }
@@ -281,9 +285,15 @@
     // center control
     function DrawFame(){
         ctx.clearRect(0,0,myCanvas.width,myCanvas.height);
+
+        ai_engine();
+
         for (var i = 0; i < bird.length; i++){
-            bird[i].Run_Frame_Activity();
+            if (!bird[i].isDead){
+                bird[i].Run_Frame_Activity();
+            }
         }
+
         display_bottom();
 
         switch(game_mode){
@@ -308,11 +318,12 @@
         }
     }
 
-    //construct the bottom bar
+    // display the floor
     var bottom_bar = new Image();
     bottom_bar.src = "assets/img/base.png";
 
-    for (var i = 0; i < 100; i++){
+    // initialize birds
+    for (var i = 0; i < numBirds; i++){
         bird.push(new MoveSprite("assets/img/bird.png"));
         bird[i].x = myCanvas.width/3;
         bird[i].y = myCanvas.height/2;
