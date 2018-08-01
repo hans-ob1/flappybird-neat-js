@@ -21,10 +21,12 @@ var numHiddenNeurons = 7; //starting neurons
 var numOutputs = 1;
 var CANVASHEIGHT = myCanvas.height;
 var MAXPIPEDIST = 500;
+var bias = 1;
 
 // control parameters
-var mutateProbability = 0.15;
-var absRange = 1/Math.sqrt(numHiddenNeurons); //for weight initialization
+var mutateProbability = 0.50;
+//var absRange = 1/Math.sqrt(numHiddenNeurons); //for weight initialization
+var absRange = 0.5
 
 var generation = 0;
 
@@ -56,6 +58,10 @@ function construct_hidden(numIn, numHidden){
         for (j = 0; j < numIn; j++){
             slot.push(randGen(numHidden));
         }
+
+        //bias
+        slot.push(randGen(numHidden));
+
         hidden_layer.push(slot);
     }
 
@@ -74,6 +80,10 @@ function construct_output(numOut,numHidden){
         for (j = 0; j < numHidden; j++){
             slot.push(randGen(numHidden));
         }
+
+        //bias
+        slot.push(randGen(numHidden));
+
         output_layer.push(slot);
     }
     return output_layer;
@@ -86,13 +96,16 @@ function Model(hidden_layer,output_layer){
     this.outputLayer = output_layer;
     
     this.isAlive = true;
-    this.fitness = -100;
+    this.fitness = 0;
 }
 
 Model.prototype.feedforward = function(inputArray){
 
     var i;
     var j;
+
+    // bias input
+    inputArray.push(1);
 
     var hidden_neuron_output = [];
     var final_node_output = [];
@@ -108,6 +121,9 @@ Model.prototype.feedforward = function(inputArray){
         // activation
         hidden_neuron_output.push(1/(1+Math.exp(-sum_of_weights)));
     }
+
+    //bias
+    hidden_neuron_output.push(1);
 
     //hidden to output
     for (i = 0; i < this.outputLayer.length; i++){
@@ -126,7 +142,7 @@ Model.prototype.feedforward = function(inputArray){
 
 // update fitness
 Model.prototype.updateFitness = function(birdScore){
-    this.fitness += 1 + birdScore;
+    this.fitness += (1 + birdScore*5);
 }
 
 
@@ -175,9 +191,9 @@ function mutate(layer){
 function predict(bird_height, dist_to_pipe, pipe_height, modex){
 
     // normalize all parameters
-    var birdHeight = Math.min(CANVASHEIGHT,bird_height)/CANVASHEIGHT - absRange;
-    var pipeDist = dist_to_pipe / MAXPIPEDIST - absRange;
-    var pipeHeight = Math.min(CANVASHEIGHT, pipe_height)/CANVASHEIGHT -absRange;
+    var birdHeight = Math.min(CANVASHEIGHT,bird_height)/CANVASHEIGHT;
+    var pipeDist = dist_to_pipe / MAXPIPEDIST;
+    var pipeHeight = Math.min(CANVASHEIGHT, pipe_height)/CANVASHEIGHT;
 
     // console.log([birdHeight, pipeDist, pipeHeight]);
 
@@ -185,7 +201,7 @@ function predict(bird_height, dist_to_pipe, pipe_height, modex){
     var output_prob = model_pool[modex].feedforward(input_to_model);
 
     //flap
-    if (output_prob[0] >= 0.5){
+    if (output_prob[0] <= 0.5){
         return 1;
     }
 
@@ -252,7 +268,7 @@ function endgameHandler(){
 
     //update new weights to model_pool, reset fitness
     for (i = 0; i < newWeights.length; i++){
-        model_pool[i].fitness = -100;
+        model_pool[i].fitness = 0;
         model_pool[i].hidden_layer = newWeights[i][0];
         model_pool[i].output_layer = newWeights[i][1];
     }
@@ -271,8 +287,8 @@ function toggleAI(){
 
 function exportout(idx){
     RunAI = false;
-    console.log(model_pool[i].hidden_layer);
-    console.log(model_pool[i].output_layer);
+    console.log(model_pool[idx].hidden_layer);
+    console.log(model_pool[idx].output_layer);
 }
 
 function ai_engine(){
