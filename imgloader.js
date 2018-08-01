@@ -17,6 +17,6 @@ var ImgLoader ={
     },
 
     getImage: function(imgName){
-        return imgList[imgName];
+        return this.imgList[imgName];
     }
 }
