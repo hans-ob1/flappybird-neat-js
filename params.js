@@ -2,10 +2,11 @@
 var Params = {};
 
 // game parameters
-Params.Game = {
-    NUM_PIPES: 100,
-    PIPE_WIDTH: 50,
+Params.game = {
+    NUM_PIPES: 10,
+    PIPE_WIDTH: 52,
     PIPE_HEIGHT: 500,
+
     PIPE_MIN_Y: 100,
     PIPE_MAX_Y: 300,
     PIPE_SPEED: -3,
@@ -16,12 +17,15 @@ Params.Game = {
     INIT_BIRD_Y: 200,
     BIRD_RADIUS: 15,
 
-    SIM_SPEED: 15
+    SIM_SPEED: 25
 }
 
-Params.DrawFrame = {
+Params.frame = {
     FRAME_WIDTH: 336,
     FRAME_HEIGHT: 512,
+
+    GRD_POSX: 168,
+    GRD_POSY: 545,
     GROUND_POS: 495,
 
     SCORE_Y: 20,
@@ -29,7 +33,7 @@ Params.DrawFrame = {
     SCORE_SPACE: 2
 }
 
-Params.AI = {
+Params.neat = {
     NUM_BIRDS: 1,
 
 }

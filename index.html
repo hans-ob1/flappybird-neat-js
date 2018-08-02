@@ -1,16 +1,19 @@
 <html>
 <head>
-    <title>Flappy Bird</title>
+    <title>Flappy Bird NEAT</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="js/phaser.min.js"></script>
+    <script src="params.js"></script>
+    <script src="game.js"></script>
 </head>
 
 <style>
     .container {
-        width: 550px;
+        width: 510px;
         margin: 0 auto;
     }
 
@@ -57,40 +60,25 @@
 </style>
 
 <body>
+    
     <div class="container">
         <h3 class="header">AI Play FlappyBird</h3>
-        <div class="game-container">
-            <canvas id="gameWindow" width=336 height=512></canvas>
+        <div id = "game-container" class="game-container">
+            <!--canvas id="gameWindow" width=336 height=512></canvas-->
             <div class="controls">
                 <div id="#scorebox" class="score-container">0</div>
-                <!--div class="button-container">
+                <div class="button-container">
                     <input class="btn btn-info btn-lg" type ="button" value ="Start Game" onclick="">
-                </div -->
+                </div>
                 <div class="button-container">
                     <input class="btn btn-danger btn-lg" type ="button" value ="Run AI" onclick="runNeat(this);">
                 </div>          
             </div>
         </div>
     </div>
+
 </body>
-
 <footer>
-    <script src="imgloader.js"></script>
-    <script src="main.js"></script>
-    <script src="params.js"></script>
-    <script src="drawframe.js"></script>
-
-    <!--script>
-        function runNeat(objButton){
-            if (objButton.value === 'Run AI')
-                objButton.value = 'Stop AI';
-            else
-                objButton.value = 'Run AI';
-            
-            //toggle AI
-            toggleAI();
-        }
-    </script-->
+    
 </footer>
-
 </html>
