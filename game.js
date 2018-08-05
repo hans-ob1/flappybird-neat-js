@@ -4,7 +4,7 @@
 var params = {
   FRAME_WIDTH: 336,
   FRAME_HEIGHT: 512,
-  FRAME_RATE: 30,
+  FRAME_RATE: 40,
 
   GROUND_HEIGHT: 112,
   GROUND_WIDTH: 336,
@@ -14,7 +14,7 @@ var params = {
   SCORE_WIDTH: 24,
   SCORE_SPACE: 2,
 
-  PIPES_NUM: 10,
+  PIPES_NUM: 999,
   PIPE_WIDTH: 52,
   PIPE_HEIGHT: 500,
   PIPE_MIN_Y: 100,
@@ -58,6 +58,14 @@ function setup() {
   imageMode(CENTER);
 
   bird_test = new Bird('blue');
+  
+  for(var i = 0; i < params.PIPES_NUM; i++){
+      var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1.5 + i*0.5);
+      var topLength = random(params.PIPE_MIN_Y,params.PIPE_MAX_Y);
+      pipes.push(new Pipe('top',topLength,dist));
+      pipes.push(new Pipe('bottom',(params.FRAME_HEIGHT - topLength - params.PIPE_GAP),dist));
+  }
+
 }
 
 function draw() {
@@ -73,10 +81,25 @@ function draw() {
           break;
     case 'running':
           bird_test.updatePos();
+          runPipes();
           break;
     case 'gameover':
           break;
   }
+
+}
+
+function runPipes(){
+    for (var i = 0; i < pipes.length; i++){
+        pipes[i].updatePos();
+       // console.log(pipes[i].startPos);
+    }
+}
+
+function keyPressed(){
+  
+  if (key == ' ')
+    bird_test.velocity.y = params.FLAP_GAIN;
 
 }
 
@@ -90,7 +113,6 @@ var Bird = function(color){
     this.angle = 0
     this.up = true; 
 
-    this.flap = false;
     this.isDead = false;
     this.score = 0;
 };
@@ -115,17 +137,19 @@ Bird.prototype.hover = function(){
 
 Bird.prototype.updatePos = function(){
 
+    /*
     if (this.flap){
         this.velocity.y += params.FLAP_GAIN;
         this.flap = false;
     }
+    */
 
     this.speedcontrol();
     this.tilt();
 
     // drawing part
     push();
-    translate(this.position.x,this.position.y)
+    translate(this.position.x,this.position.y);
     rotate(this.angle);
     image(blue_bird,0,0);
     pop();
@@ -145,9 +169,50 @@ Bird.prototype.speedcontrol = function(){
 
 Bird.prototype.tilt = function(){
     if (this.velocity.y < 0)
-        this.angle = 345;
-    else if (this.angle < 70){
-        this.angle += 4;
+        this.angle = -15;
+    else if (this.angle < 45){
+        this.angle += 2;
+    }
+}
+
+// pipes
+var Pipe = function(pipe_type, pipe_length, startX){
+
+    this.type = pipe_type;
+    this.angle = -90;
+    this.length = pipe_length;
+    this.speed = params.PIPE_SPEED;
+    this.startPos = startX;         // x-coord for of top hand corner
+}
+
+Pipe.prototype.updatePos = function(){
+
+    // calculate the x_coord
+    this.startPos += params.PIPE_SPEED;
+    var x_coord = this.startPos + params.PIPE_WIDTH/2;
+    
+
+    if (this.startPos <= params.FRAME_WIDTH){
+        if (this.type == 'top'){
+            var y_coord = this.length - (params.PIPE_HEIGHT/2);
+
+            // drawing part
+            push();
+            translate(x_coord, y_coord);
+           // rotate(this.angle);
+            image(pipe_down,0,0);
+            pop();            
+            
+        }else{
+            var y_coord = ((params.PIPE_HEIGHT/2) +  params.FRAME_HEIGHT) - this.length;
+
+            // drawing part
+            push();
+            translate(x_coord, y_coord);
+           // rotate(this.angle);
+            image(pipe_up,0,0);
+            pop();
+        }
     }
 }
 
