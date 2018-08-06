@@ -32,10 +32,10 @@ var params = {
   ACCEL: 1
 };
 
-var game_state = 'running';
-//var flap_gain = createVector(0, 5); // amount of height gain with a single flap
+var game_state = 'prestart';
 var birds = [];
 var pipes = [];
+var highscore = 0; 
 
 function setup() {
 
@@ -86,6 +86,8 @@ function draw() {
           gameoverCheck();
           birds[0].updatePos();
           runPipes();
+          updateScore();
+          console.log(birds[0].score);
           break;
     case 'gameover':
           resetGame();
@@ -95,18 +97,24 @@ function draw() {
 }
 
 
+// control functions
+// -----------------------------------------------------------------------------------------------------------------------
 function resetGame(){
     var i;
     var j;
 
+    highscore = 0;
+
+    // reset birds status
     for (i = 0; i < birds.length; i++){
         birds[i].position.y = params.BIRD_Y;
         birds[i].isDead = false;
+        birds[i].score = 0;
     }
 
-    // reset
-    //pipes.splice(0,pipes.length);
-    pipes = [];
+    // reset pipes
+    pipes.splice(0,pipes.length);
+    //pipes = [];
     for(j = 0; j < params.PIPES_NUM; j++){
         var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1.5 + j*0.5);
         var topLength = random(params.PIPE_MIN_Y,params.PIPE_MAX_Y);
@@ -167,13 +175,26 @@ function collisionCheck(){
 
 function runPipes(){
     for (var i = 0; i < pipes.length; i++){
+
         pipes[i].updatePos();
+
+        if (pipes[i].startPos + params.PIPE_WIDTH < params.BIRD_X - params.BIRD_DIAMETER/2){
+            if (!pipes[i].isPassed){
+                pipes[i].isPassed = true;
+                highscore += 0.5; 
+            }
+        }
     }
 
-    // remove obstacles that went behind the bird & out of screen
-    if (pipes.length > 0){
-        if (pipes[0].startPos + params.PIPE_WIDTH < 0)
-            pipes.shift();
+}
+
+function updateScore(){
+    // update current score of birds
+    var i;
+    for (i = 0; i < birds.length; i++){
+        if (!birds[i].isDead){
+            birds[i].score = highscore;
+        }
     }
 }
 
@@ -272,6 +293,8 @@ Bird.prototype.tilt = function(){
 var Pipe = function(pipe_type, pipe_length, startX){
 
     this.type = pipe_type;
+    this.isPassed = false;
+
     this.angle = -90;
     this.length = pipe_length;
     this.speed = params.PIPE_SPEED;
@@ -285,7 +308,7 @@ Pipe.prototype.updatePos = function(){
     var x_coord = this.startPos + params.PIPE_WIDTH/2;
     
 
-    if (this.startPos <= params.FRAME_WIDTH){
+    if ((this.startPos <= params.FRAME_WIDTH) && (this.startPos + params.PIPE_WIDTH >= 0)){
         if (this.type == 'top'){
             var y_coord = this.length - (params.PIPE_HEIGHT/2);
 
