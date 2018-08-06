@@ -25,7 +25,7 @@ var params = {
   BIRD_NUM: 1,
   BIRD_X: 100,
   BIRD_Y: 200,
-  BIRD_RADIUS: 48,
+  BIRD_DIAMETER: 36,
 
   FLAP_GAIN: -10,
   MAX_FALL_SPEED: 10,
@@ -58,7 +58,9 @@ function setup() {
   imageMode(CENTER);
 
   bird_test = new Bird('blue');
+  birds.push(bird_test);
   
+  // pre-set
   for(var i = 0; i < params.PIPES_NUM; i++){
       var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1.5 + i*0.5);
       var topLength = random(params.PIPE_MIN_Y,params.PIPE_MAX_Y);
@@ -77,30 +79,120 @@ function draw() {
 
   switch (game_state){
     case 'prestart':
-          bird_test.hover();
+          birds[0].hover();
           break;
     case 'running':
-          bird_test.updatePos();
+          collisionCheck();
+          gameoverCheck();
+          birds[0].updatePos();
           runPipes();
           break;
     case 'gameover':
+          resetGame();
           break;
   }
 
 }
 
-function runPipes(){
-    for (var i = 0; i < pipes.length; i++){
-        pipes[i].updatePos();
-       // console.log(pipes[i].startPos);
+
+function resetGame(){
+    var i;
+    var j;
+
+    for (i = 0; i < birds.length; i++){
+        birds[i].position.y = params.BIRD_Y;
+        birds[i].isDead = false;
+    }
+
+    // reset
+    //pipes.splice(0,pipes.length);
+    pipes = [];
+    for(j = 0; j < params.PIPES_NUM; j++){
+        var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1.5 + j*0.5);
+        var topLength = random(params.PIPE_MIN_Y,params.PIPE_MAX_Y);
+        pipes.push(new Pipe('top',topLength,dist));
+        pipes.push(new Pipe('bottom',(params.FRAME_HEIGHT - topLength - params.PIPE_GAP),dist));
     }
 }
 
-function keyPressed(){
-  
-  if (key == ' ')
-    bird_test.velocity.y = params.FLAP_GAIN;
+function gameoverCheck(){
 
+    var numDead = 0;
+    for (var i = 0; i < birds.length; i++){
+        if (birds[i].isDead)
+            numDead += 1;
+    }
+
+    if (numDead === params.BIRD_NUM)
+        game_state = 'gameover';
+}
+
+function collisionCheck(){
+
+    var i;
+    var j;
+
+    // top bound & lower bound check
+    for (i = 0; i < birds.length; i++){
+        if (birds[i].position.y - params.BIRD_DIAMETER/4 < 0)
+            birds[i].isDead = true;
+        else if (birds[i].position.y + params.BIRD_DIAMETER/4 > params.Y_OFFSET)
+            birds[i].isDead = true;
+    }
+
+    // obstacle check
+    for(i = 0; i < pipes.length; i++){
+        // check if pipe has rached critical region
+        if (pipes[i].startPos < params.BIRD_X + params.BIRD_DIAMETER/2){
+            if (!(pipes[i].startPos + params.PIPE_WIDTH < params.BIRD_X - params.BIRD_DIAMETER/2)){
+
+                for (j = 0; j < birds.length; j++){
+                    if(pipes[i].type == 'top'){
+                        if (birds[j].position.y - params.BIRD_DIAMETER/4 <= pipes[i].length){
+                            birds[j].isDead = true;
+                            console.log("hit top");
+                        }
+                    }else{
+                        if (birds[j].position.y + params.BIRD_DIAMETER/4 >= params.FRAME_HEIGHT - pipes[i].length){
+                            birds[j].isDead = true;
+                            console.log("hit bottom");
+                        }
+                                                    
+                    }
+                 }
+            }
+        }
+    }
+}
+
+function runPipes(){
+    for (var i = 0; i < pipes.length; i++){
+        pipes[i].updatePos();
+    }
+
+    // remove obstacles that went behind the bird & out of screen
+    if (pipes.length > 0){
+        if (pipes[0].startPos + params.PIPE_WIDTH < 0)
+            pipes.shift();
+    }
+}
+
+// flap bird
+function keyPressed(){
+  if (key == ' '){
+
+    switch (game_state){
+        case 'prestart':
+            game_state = 'running';
+            break;
+        case 'running':
+            birds[0].velocity.y = params.FLAP_GAIN;
+            break;
+        case 'gameover':
+            game_state = 'prestart';
+            break;
+    }
+  }
 }
 
 
@@ -132,7 +224,7 @@ Bird.prototype.hover = function(){
       this.position.add(createVector(0, 0.5));
     }
 
-    image(blue_bird,this.position.x,this.position.y);
+    image(blue_bird,this.position.x,this.position.y, params.BIRD_DIAMETER, params.BIRD_DIAMETER);
 }
 
 Bird.prototype.updatePos = function(){
@@ -151,7 +243,7 @@ Bird.prototype.updatePos = function(){
     push();
     translate(this.position.x,this.position.y);
     rotate(this.angle);
-    image(blue_bird,0,0);
+    image(blue_bird, 0, 0, params.BIRD_DIAMETER, params.BIRD_DIAMETER);
     pop();
 }
 
@@ -159,9 +251,9 @@ Bird.prototype.speedcontrol = function(){
     if (this.velocity.y < params.MAX_FALL_SPEED)
         this.velocity.y += params.ACCEL;
 
-    if (this.position.y > params.Y_OFFSET){
-        this.isDead = true;
-        this.velocity.y = 0;
+    if (this.isDead){
+        if (this.position.y + params.BIRD_DIAMETER/4 > params.Y_OFFSET)
+            this.velocity.y = 0;
     }
 
     this.position.y += this.velocity.y;
@@ -175,6 +267,7 @@ Bird.prototype.tilt = function(){
     }
 }
 
+// --------------------------------------------------------------------------------------------------------
 // pipes
 var Pipe = function(pipe_type, pipe_length, startX){
 
