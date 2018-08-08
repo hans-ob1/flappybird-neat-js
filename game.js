@@ -1,37 +1,5 @@
 /* main game engine */
 
-// Initialize params
-var params = {
-  FRAME_WIDTH: 336,
-  FRAME_HEIGHT: 512,
-  FRAME_RATE: 40,
-
-  GROUND_HEIGHT: 112,
-  GROUND_WIDTH: 336,
-  Y_OFFSET: 490,
-
-  SCORE_Y: 20,
-  SCORE_WIDTH: 24,
-  SCORE_SPACE: 2,
-
-  PIPES_NUM: 999,
-  PIPE_WIDTH: 52,
-  PIPE_HEIGHT: 500,
-  PIPE_MIN_Y: 100,
-  PIPE_MAX_Y: 300,
-  PIPE_SPEED: -3,
-  PIPE_GAP: 100,
-
-  BIRD_NUM: 1,
-  BIRD_X: 100,
-  BIRD_Y: 200,
-  BIRD_DIAMETER: 36,
-
-  FLAP_GAIN: -10,
-  MAX_FALL_SPEED: 10,
-  ACCEL: 1
-};
-
 var game_state = 'prestart';
 var birds = [];
 var pipes = [];
@@ -173,6 +141,7 @@ function collisionCheck(){
     }
 }
 
+// update obstacle position
 function runPipes(){
     for (var i = 0; i < pipes.length; i++){
 
@@ -215,120 +184,3 @@ function keyPressed(){
     }
   }
 }
-
-
-// define bird object
-var Bird = function(color){
-    this.colour = color;
-
-    this.velocity = createVector(0, 0);
-    this.position = createVector(params.BIRD_X, params.BIRD_Y);
-    this.angle = 0
-    this.up = true; 
-
-    this.isDead = false;
-    this.score = 0;
-};
-
-Bird.prototype.hover = function(){
-    if (this.position.y <= params.BIRD_Y - 5){
-      // too high
-      this.up = false;
-    }else if (this.position.y >= params.BIRD_Y + 5){
-      // too low
-      this.up = true;
-    }
-
-    if (this.up){
-      this.position.add(createVector(0, -0.5));
-    }else{
-      this.position.add(createVector(0, 0.5));
-    }
-
-    image(blue_bird,this.position.x,this.position.y, params.BIRD_DIAMETER, params.BIRD_DIAMETER);
-}
-
-Bird.prototype.updatePos = function(){
-
-    /*
-    if (this.flap){
-        this.velocity.y += params.FLAP_GAIN;
-        this.flap = false;
-    }
-    */
-
-    this.speedcontrol();
-    this.tilt();
-
-    // drawing part
-    push();
-    translate(this.position.x,this.position.y);
-    rotate(this.angle);
-    image(blue_bird, 0, 0, params.BIRD_DIAMETER, params.BIRD_DIAMETER);
-    pop();
-}
-
-Bird.prototype.speedcontrol = function(){
-    if (this.velocity.y < params.MAX_FALL_SPEED)
-        this.velocity.y += params.ACCEL;
-
-    if (this.isDead){
-        if (this.position.y + params.BIRD_DIAMETER/4 > params.Y_OFFSET)
-            this.velocity.y = 0;
-    }
-
-    this.position.y += this.velocity.y;
-}
-
-Bird.prototype.tilt = function(){
-    if (this.velocity.y < 0)
-        this.angle = -15;
-    else if (this.angle < 45){
-        this.angle += 2;
-    }
-}
-
-// --------------------------------------------------------------------------------------------------------
-// pipes
-var Pipe = function(pipe_type, pipe_length, startX){
-
-    this.type = pipe_type;
-    this.isPassed = false;
-
-    this.angle = -90;
-    this.length = pipe_length;
-    this.speed = params.PIPE_SPEED;
-    this.startPos = startX;         // x-coord for of top hand corner
-}
-
-Pipe.prototype.updatePos = function(){
-
-    // calculate the x_coord
-    this.startPos += params.PIPE_SPEED;
-    var x_coord = this.startPos + params.PIPE_WIDTH/2;
-    
-
-    if ((this.startPos <= params.FRAME_WIDTH) && (this.startPos + params.PIPE_WIDTH >= 0)){
-        if (this.type == 'top'){
-            var y_coord = this.length - (params.PIPE_HEIGHT/2);
-
-            // drawing part
-            push();
-            translate(x_coord, y_coord);
-           // rotate(this.angle);
-            image(pipe_down,0,0);
-            pop();            
-            
-        }else{
-            var y_coord = ((params.PIPE_HEIGHT/2) +  params.FRAME_HEIGHT) - this.length;
-
-            // drawing part
-            push();
-            translate(x_coord, y_coord);
-           // rotate(this.angle);
-            image(pipe_up,0,0);
-            pop();
-        }
-    }
-}
-
