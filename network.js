@@ -21,7 +21,7 @@ function Network(){
 
 Network.prototype.mutate = function(){
     var sn = int(random(this.size));
-    var fn = int(random(net_params.INPUT_SIZE, this.size+1));
+    var fn = int(random(net_params.INPUT_SIZE+1, this.size));
 
     // perform swap
     if (sn > fn && fn != net_params.NODE_OUTPUT){
@@ -32,13 +32,19 @@ Network.prototype.mutate = function(){
 
     // check if two nodes are linked
     if (this.edges.hasOwnProperty(sn) && this.edges[sn].hasOwnProperty(fn)){
-        if (random() > net_params.ADD_NODE_PROB)
+        if (random() > net_params.ADD_NODE_PROB){
             this.add_node(sn,fn);
-        else
+        }
+        else{
             this.change_edge_weights(sn,fn);
+        }
     }else{
         this.add_edge(sn,fn);
+        
     }
+
+    console.log(this.edges);
+    console.log(this.nodes);
 }
 
 Network.prototype.feedforward = function(dist_to_pipe, upper_pipe_len, lower_pipe_len){

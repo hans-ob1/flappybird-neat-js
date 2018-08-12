@@ -15,6 +15,16 @@ var Bird = function(color){
     this.fitness = 0;
 };
 
+Bird.prototype.reset = function(){
+    // game element
+    this.position.y = params.BIRD_Y;
+    this.isDead = false;
+    this.score = 0;
+
+    // ai parameters
+    this.fitness = 0;
+}
+
 Bird.prototype.hover = function(){
     if (this.position.y <= params.BIRD_Y - 5){
       // too high

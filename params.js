@@ -1,8 +1,10 @@
 // Initialize params
 var params = {
+    AI_PLAY: true,  
+
     FRAME_WIDTH: 336,
     FRAME_HEIGHT: 512,
-    FRAME_RATE: 40,
+    FRAME_RATE: 50,
   
     GROUND_HEIGHT: 112,
     GROUND_WIDTH: 336,
@@ -20,7 +22,7 @@ var params = {
     PIPE_SPEED: -3,
     PIPE_GAP: 100,
   
-    BIRD_NUM: 1,
+    BIRD_NUM: 50,
     BIRD_X: 100,
     BIRD_Y: 200,
     BIRD_DIAMETER: 36,
