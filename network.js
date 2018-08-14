@@ -2,11 +2,11 @@
 var net_params = {
 
     //Node ID
-    NODE_BIAS: 0,
-    NODE_PIPE_DIS: 1,
-    NODE_PIPE_LOWER: 2,
-    NODE_PIPE_UPPER: 3,
-    NODE_OUTPUT: 4,
+    NODE_BIAS: 1,
+    NODE_PIPE_DIS: 2,
+    NODE_PIPE_LOWER: 3,
+    NODE_BIRD_HEIGHT: 4,
+    NODE_OUTPUT: 0,
     
     INPUT_SIZE: 4,
     STEP_SIZE: 0.1,
@@ -14,14 +14,20 @@ var net_params = {
 }
 
 function Network(){
-    this.size = net_params.INPUT_SIZE;
+    this.nodesNum = net_params.INPUT_SIZE;
     this.nodes = [];
     this.edges = [];
 }
 
 Network.prototype.mutate = function(){
-    var sn = int(random(this.size));
-    var fn = int(random(net_params.INPUT_SIZE+1, this.size));
+
+    // pick between 1 - nodesNum
+    var sn = int(random(1,this.nodesNum+1));
+
+    if (this.nodesNum > net_params.INPUT_SIZE)
+        var fn = int(random(net_params.INPUT_SIZE+1, this.nodesNum+1));
+    else
+        var fn = net_params.NODE_OUTPUT
 
     // perform swap
     if (sn > fn && fn != net_params.NODE_OUTPUT){
@@ -34,35 +40,29 @@ Network.prototype.mutate = function(){
     if (this.edges.hasOwnProperty(sn) && this.edges[sn].hasOwnProperty(fn)){
         if (random() > net_params.ADD_NODE_PROB){
             this.add_node(sn,fn);
-        }
-        else{
+        }else{
             this.change_edge_weights(sn,fn);
         }
     }else{
         this.add_edge(sn,fn);
-        
     }
-
-    console.log(this.edges);
-    console.log(this.nodes);
 }
 
-Network.prototype.feedforward = function(dist_to_pipe, upper_pipe_len, lower_pipe_len){
+Network.prototype.feedforward = function(dist_to_pipe, bird_height, lower_pipe_len){
 
     // Feed input into the input nodes
     this.nodes[net_params.NODE_BIAS] = 1;
     this.nodes[net_params.NODE_PIPE_DIS] = dist_to_pipe;
     this.nodes[net_params.NODE_PIPE_LOWER] = lower_pipe_len;
-    this.nodes[net_params.NODE_PIPE_UPPER] = upper_pipe_len;
+    this.nodes[net_params.NODE_BIRD_HEIGHT] = bird_height;
     this.nodes[net_params.NODE_OUTPUT] = 0;
 
     var i;
-    for (i = net_params.INPUT_SIZE + 1; i < this.size; i++){
+    for (i = net_params.INPUT_SIZE + 1; i <= this.nodesNum; i++){
         this.nodes[i] = 0;
     }
 
-    for (i = 0; i < this.size; i++){
-        if (i != net_params.NODE_OUTPUT){
+    for (i = 1; i <= this.nodesNum; i++){
 
             if(i > net_params.INPUT_SIZE){
                 this.nodes[i] = this.activation(this.nodes[i]);
@@ -71,16 +71,16 @@ Network.prototype.feedforward = function(dist_to_pipe, upper_pipe_len, lower_pip
             for (var j in this.edges[i]){
                 this.nodes[j] += this.nodes[i]*this.edges[i][j];
             }
-        }
     }
+
 
     return this.nodes[net_params.NODE_OUTPUT] > 0;
 }
 
 Network.prototype.add_node = function(a,b){
-    this.edges[a][++this.size] = 1;
-    this.edges[this.size] = this.edges[this.size] || [];
-    this.edges[this.size][b] = this.edges[a][b];
+    this.edges[a][++this.nodesNum] = 1;
+    this.edges[this.nodesNum] = this.edges[this.nodesNum] || [];
+    this.edges[this.nodesNum][b] = this.edges[a][b];
     this.edges[a][b] = 0;
 }
 

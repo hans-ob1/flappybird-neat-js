@@ -22,7 +22,7 @@ var params = {
     PIPE_SPEED: -3,
     PIPE_GAP: 100,
   
-    BIRD_NUM: 50,
+    BIRD_NUM: 30,
     BIRD_X: 100,
     BIRD_Y: 200,
     BIRD_DIAMETER: 36,

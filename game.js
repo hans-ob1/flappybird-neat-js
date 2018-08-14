@@ -7,7 +7,7 @@ var highscore = 0;
 
 // AI params
 var generation;
-var nextUpperIdx = -1;
+var nextUpperIdx = 0;
 var nextLowerIdx = -1;
 
 function setup() {
@@ -70,6 +70,8 @@ function draw() {
           gameoverCheck();
           updateScore();
 
+          console.log(nextUpperIdx)
+
           if(params.AI_PLAY){
             generation.flockUpdate();
           }else{
@@ -77,11 +79,11 @@ function draw() {
           }
           break;
     case 'gameover':
-          resetGame();
 
           if(params.AI_PLAY){
             generation.nextGen();
-          }
+          }    
+          resetGame();
           game_state = 'running';
           break;
   }
@@ -96,6 +98,7 @@ function resetGame(){
     var j;
 
     highscore = 0;
+    nextUpperIdx = 0;
 
     // reset birds status
     if(params.AI_PLAY){
@@ -109,7 +112,7 @@ function resetGame(){
     // reset obstacles
     pipes.splice(0,pipes.length);
     for(j = 0; j < params.PIPES_NUM; j++){
-        var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1.5 + j*0.5);
+        var dist = (params.FRAME_WIDTH + params.PIPE_WIDTH) * (1 + j*0.5);
         var topLength = random(params.PIPE_MIN_Y,params.PIPE_MAX_Y);
         pipes.push(new Pipe('top',topLength,dist));
         pipes.push(new Pipe('bottom',(params.FRAME_HEIGHT - topLength - params.PIPE_GAP),dist));
@@ -145,10 +148,10 @@ function collisionCheck(){
 
     if(params.AI_PLAY){
         for (i = 0; i < generation.units.length; i++){
-            if (generation.units[i].position.y - params.BIRD_DIAMETER/2 < 0){
+            if (generation.units[i].position.y - params.BIRD_DIAMETER/3 < 0){
                 generation.units[i].isDead = true;
             }
-            else if (generation.units[i].position.y + params.BIRD_DIAMETER/2 > params.Y_OFFSET){
+            else if (generation.units[i].position.y + params.BIRD_DIAMETER/3 > params.Y_OFFSET){
                 generation.units[i].isDead = true;
             }
         }
@@ -162,19 +165,19 @@ function collisionCheck(){
     // obstacle check
     for(i = 0; i < pipes.length; i++){
         // check if pipe has reached critical region
-        if (pipes[i].startPos < params.BIRD_X + params.BIRD_DIAMETER/2){
+        if (pipes[i].startPos < params.BIRD_X + params.BIRD_DIAMETER/3){
             if (!(pipes[i].startPos + params.PIPE_WIDTH < params.BIRD_X - params.BIRD_DIAMETER/2)){
 
                 if (params.AI_PLAY){
-                    for (j = 0; j < generation.units[i].length; j++){
+                    for (j = 0; j < generation.units.length; j++){
                         if(pipes[i].type == 'top'){
-                            if (generation.units[i].position.y - params.BIRD_DIAMETER/2 <= pipes[i].length){
-                                generation.units[i].isDead = true;
+                            if (generation.units[j].position.y - params.BIRD_DIAMETER/3 <= pipes[i].length){
+                                generation.units[j].isDead = true;
                                 console.log("hit top");
                             }
                         }else{
-                            if (generation.units[i].position.y + params.BIRD_DIAMETER/2 >= params.FRAME_HEIGHT - pipes[i].length){
-                                generation.units[i].isDead = true;
+                            if (generation.units[j].position.y + params.BIRD_DIAMETER/3 >= params.FRAME_HEIGHT - pipes[i].length){
+                                generation.units[j].isDead = true;
                                 console.log("hit bottom");
                             }
                                                         
@@ -215,10 +218,12 @@ function runPipes(){
 
     //identify next pipe
     for (var i = 0; i < pipes.length; i++){
-        if (!pipes[i].isPassed){
-            nextUpperIdx = i;
-            nextLowerIdx = i+1;
-            break;
+        if (i % 2 === 0){
+            if (pipes[i].startPos + params.PIPE_WIDTH < (params.BIRD_X - params.BIRD_DIAMETER/2)){
+                if(i + 2 <= params.PIPES_NUM)
+                    nextUpperIdx = i + 2;
+                break;
+            }
         }
     }
 

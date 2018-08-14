@@ -1,8 +1,8 @@
 // genetic algorithm
 
 var gen_params ={
-    SURVIVE_RATE : 60,   //percentage
-    CHANCE_OF_MUTATION: 0.5 
+    SURVIVE_RATE : 30,   //percentage
+    CHANCE_OF_MUTATION: 0.4
 }
 
 function GeneticAlgo(){
@@ -29,16 +29,17 @@ GeneticAlgo.prototype.flockUpdate = function(){
 
         if (!this.units[i].isDead){
 
-            // update fitness
-            this.units[i].fitness += 1;
-
             // calculate input parameters
             var distToNearestPipe = (pipes[nextUpperIdx].startPos - params.BIRD_X)/params.FRAME_WIDTH;
-            var upperPipeLength = pipes[nextUpperIdx].length/params.FRAME_HEIGHT;
-            var lowerPipeLength = pipes[nextLowerIdx].length/params.FRAME_HEIGHT;
+            var unitHeight = this.units[i].position.y/params.FRAME_HEIGHT;
+            var lowerPipeLength = pipes[nextUpperIdx].length/params.FRAME_HEIGHT;
 
-            if(this.units[i].brain.feedforward(distToNearestPipe,upperPipeLength,lowerPipeLength))
+            // update fitness
+            this.units[i].fitness += (1 + this.units[i].score);
+
+            if(this.units[i].brain.feedforward(distToNearestPipe,unitHeight,lowerPipeLength)){
                 this.units[i].velocity.y += params.FLAP_GAIN;
+            }
 
             this.units[i].updatePos();
         }
@@ -63,9 +64,6 @@ GeneticAlgo.prototype.nextGen = function(){
         this.units.pop();
     }
 
-    // normalize fitness
-    //this._normalize();
-
     // crossover to fill up the population
     for (var i = survived_num; i < params.BIRD_NUM; i++){
 
@@ -82,15 +80,7 @@ GeneticAlgo.prototype.nextGen = function(){
         this.units[i].reset();
 
     this.generation_num++;
-}
-
-GeneticAlgo.prototype._normalize = function(){
-    var total_fitness = 0;
-    for(var i = 0; i < this.units.length; i++)
-        total_fitness += this.units[i].fitness;
-        
-    for(var i = 0; i < this.units.length; i++)
-        this.units[i].fitness /= total_fitness;
+    console.log(this.generation_num);
 }
 
 GeneticAlgo.prototype._crossover = function(uDexA, uDexB){
@@ -103,10 +93,10 @@ GeneticAlgo.prototype._crossover = function(uDexA, uDexB){
     }
     
     var offspring = new Bird();
-    offspring.brain.size = this.units[uDexA].brain.size;
+    offspring.brain.nodesNum = this.units[uDexA].brain.nodesNum;
     //console.log(this.units[uDexA].brain.size);
 
-    for (var i = 0; i < offspring.brain.size; i++){
+    for (var i = 0; i < offspring.brain.nodesNum; i++){
         if(i != params.NODE_OUTPUT){
             offspring.brain.edges[i] = [];
             for(var j in this.units[uDexA].brain.edges[i]){
@@ -116,13 +106,13 @@ GeneticAlgo.prototype._crossover = function(uDexA, uDexB){
                     }else{
                         offspring.brain.edges[i][j] = this.units[uDexA].brain.edges[i][j];
                     }
-                }
+                }else
+                    offspring.brain.edges[i][j] = this.units[uDexA].brain.edges[i][j];
             }
         }
     }
 
     if(random() <= gen_params.CHANCE_OF_MUTATION){
-        //console.log("mutate");
         offspring.brain.mutate();
     }
 
