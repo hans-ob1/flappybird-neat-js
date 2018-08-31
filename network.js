@@ -1,18 +1,4 @@
 
-var net_params = {
-
-    //Node ID
-    NODE_BIAS: 1,
-    NODE_PIPE_DIS: 2,
-    NODE_PIPE_LOWER: 3,
-    NODE_BIRD_HEIGHT: 4,
-    NODE_OUTPUT: 0,
-    
-    INPUT_SIZE: 4,
-    STEP_SIZE: 0.1,
-    ADD_NODE_PROB: 0.5
-}
-
 function Network(){
     this.nodesNum = net_params.INPUT_SIZE;
     this.nodes = [];

@@ -1,10 +1,5 @@
 // genetic algorithm
 
-var gen_params ={
-    SURVIVE_RATE : 30,   //percentage
-    CHANCE_OF_MUTATION: 0.4
-}
-
 function GeneticAlgo(){
     this.generation_num = 1;
     this.units = [];

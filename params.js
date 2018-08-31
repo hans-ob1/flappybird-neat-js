@@ -1,10 +1,10 @@
 // Initialize params
 var params = {
-    AI_PLAY: true,  
+    AI_PLAY: false,  
 
     FRAME_WIDTH: 336,
     FRAME_HEIGHT: 512,
-    FRAME_RATE: 50,
+    FRAME_RATE: 30,
   
     GROUND_HEIGHT: 112,
     GROUND_WIDTH: 336,
@@ -31,3 +31,23 @@ var params = {
     MAX_FALL_SPEED: 10,
     ACCEL: 1
   };
+
+
+var net_params = {
+
+  //Node ID
+  NODE_BIAS: 1,
+  NODE_PIPE_DIS: 2,
+  NODE_PIPE_LOWER: 3,
+  NODE_BIRD_HEIGHT: 4,
+  NODE_OUTPUT: 0,
+  
+  INPUT_SIZE: 4,
+  STEP_SIZE: 0.1,
+  ADD_NODE_PROB: 0.5
+}
+
+var gen_params ={
+  SURVIVE_RATE : 30,   //percentage
+  CHANCE_OF_MUTATION: 0.4
+}

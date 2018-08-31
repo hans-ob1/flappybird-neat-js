@@ -54,8 +54,6 @@ function draw() {
   var drawGRDY = params.Y_OFFSET + params.GROUND_HEIGHT/2;
   image(grd,params.GROUND_WIDTH/2,drawGRDY);
 
-  //console.log(generation);
-
   switch (game_state){
     case 'prestart':
           if(params.AI_PLAY){
@@ -69,8 +67,6 @@ function draw() {
           collisionCheck();
           gameoverCheck();
           updateScore();
-
-          console.log(nextUpperIdx)
 
           if(params.AI_PLAY){
             generation.flockUpdate();
@@ -126,7 +122,6 @@ function gameoverCheck(){
         for (var i = 0; i < params.BIRD_NUM; i++){
             if (generation.units[i].isDead){
                 numDead += 1;
-                //console.log(numDead);
             }
         }
 
