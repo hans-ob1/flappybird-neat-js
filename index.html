@@ -1,79 +1,17 @@
 <html>
-<head>
-    <title>Flappy Bird NEAT</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="js/p5/p5.min.js"></script>
+    <head>
+        <title>Flappy Bird NEAT</title>
+        <link rel="stylesheet" href="css/flappy.css" type="text/css"/>
+        <script type="text/javascript" src="js/game_manager.js"></script>
+        <script type="text/javascript" src="js/frame_updater.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+    </head>
 
-    <script src="params.js"></script>
-    <script src="bird.js"></script>
-    <script src="obstacles.js"></script>
-    <script src="network.js"></script>
-    <script src="genetic.js"></script>
-    <script src="game.js"></script>
-</head>
-
-<style>
-    .container {
-        width: 510px;
-        margin: 0 auto;
-    }
-
-    .header {
-        text-align: center;
-        font-family: Verdana;
-    }
-
-    .game-container {
-        text-align: center;
-        height: 600px;
-        margin-top: 10px;
-    }
-
-    .controls {
-        width: 130px;
-        float: right;
-        height: 95%;
-    }
-
-    .score-container {
-        background-color: #FFFFFF;
-        box-shadow: 0 0 10px 2px #EEEEEE;
-        text-align: center;
-        color: green;
-        font-size: 25px;
-        border: 1px solid #CCCCCC;
-        font-weight: bold;
-        padding: 5px;
-        margin-bottom: 10px;
-    }
-
-    .score-container::before {
-        content: "Score";
-        width: 100%;
-        float: right;
-        color: #BBBBBB;
-        font-size: 15px;
-        font-weight: normal;
-    }
-
-    .button-container{
-        margin-bottom: 10px;
-    }
-</style>
-
-<body>
-    
-    <div class="container">
-        <h3 class="header">AI Play FlappyBird</h3>
-        <div id = "game-container" class="game-container"></div>
-    </div>
-
-</body>
-<footer>
-    
-</footer>
+    <body>
+        <div id="main-content">
+            <div id="canvas-div">
+                <canvas id="canvas" width="672" height="512"></canvas>
+            </div>
+        </div>
+    </body>
 </html>
