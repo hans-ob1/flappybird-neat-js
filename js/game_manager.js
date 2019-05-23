@@ -8,7 +8,8 @@ GameManager.prototype = {
         this.gameover = false;
         this.curr_score = 0;
 
-        frame_updater.updateFrame();
+        this.timerGame();
+        frame_updater.initFrame();
     },
 
     updateGame: function(){
@@ -25,7 +26,7 @@ GameManager.prototype = {
             function(){
                 self.updateGame();
             },
-            30
+            Params.frame_updater.FRAME_RATE
         )
     }
 }

@@ -1,3 +1,6 @@
+var timer;
+var game_manager;
+var frame_updater;
 
 AssetManager.loadImg([
     'background',
@@ -19,6 +22,7 @@ AssetManager.loadImg([
 ])
 
 AssetManager.loadComplete = function(){
+    console.log("Images Loaded");
     game_manager = new GameManager();
     frame_updater = new FrameUpdater();
     game_manager.startGame();
