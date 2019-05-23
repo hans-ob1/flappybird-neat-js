@@ -31,14 +31,21 @@ var AssetManager = {
 function FrameUpdater(){
     this._canvas = document.getElementById("canvas").getContext("2d");
     this._platform = [];
-    
-    // external functions
-    function updateFrame(){
-        this._drawBackground();
-    }
+}
+
+FrameUpdater.prototype = {
 
     // internal functions
-    function _drawBackground(){
+    initFrame: function(){
+
+    },
+
+    updateFrame: function(){
+        this._drawBackground();
+    },
+
+    // external functions
+    _drawBackground: function(){
         this._canvas.drawImage(AssetManager.getImg('background'), 0, 0);
         this._canvas.drawImage(AssetManager.getImg('background'), 336, 0);
     }
