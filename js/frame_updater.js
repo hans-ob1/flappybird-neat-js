@@ -39,14 +39,17 @@ FrameUpdater.prototype = {
     // internal functions
     initFrame: function(){
         for (var i = 0; i < Params.frame_updater.NUM_OF_PLATFORM; i++){
-            this._platform[i] = Params.frame_updater.WIDTH_OF_SCREEN * i
+            this._platform[i] = (Params.frame_updater.WIDTH_OF_SCREEN/2) * i
         }
     },
 
     updateFrame: function(){
         this._movePlatform();
         this._drawBackground();
+        this._drawPipes();
         this._drawPlatform();
+        this._drawBird();
+        this._drawScore();
     },
 
     // external functions
@@ -61,12 +64,57 @@ FrameUpdater.prototype = {
         }
     },
 
+    _drawPipes: function(){
+        for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
+            this._canvas.drawImage(AssetManager.getImg("pipe_up"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]+Params.game_manager.GAP_PIPE);
+            this._canvas.drawImage(AssetManager.getImg("pipe_down"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]-Params.game_manager.HEIGHT_OF_PIPE);
+        }
+    },
+
+    _drawBird: function(){
+        if (Params.game_manager.PLAY_MODE === 0){
+            this._canvas.save();
+            this._canvas.translate(game_manager.solo_bird.x, game_manager.solo_bird.y);
+            if (!game_manager.gameover){
+                this._canvas.rotate(Math.min(game_manager.solo_bird.speed * 7, 90) * Math.PI /180);
+            }
+            this._canvas.drawImage(AssetManager.getImg("red_bird"), -24, -24);
+            this._canvas.restore();
+        }
+    },
+
+    _drawScore: function(){
+        var numeric_score = game_manager.curr_score;
+        var display_width = 0;
+        var display_score = 0;
+
+        if (numeric_score == 0){
+            var x_coord = (Params.frame_updater.WIDTH_OF_SCREEN - Params.frame_updater.SCORE_DISPLAY_GAP)/2
+            var y_coord = Params.frame_updater.SCORE_DISPLAY_Y;
+            this._canvas.drawImage(AssetManager.getImg("0"), x_coord, y_coord);
+        } else{
+            while (numeric_score > 0){
+                display_width += Params.frame_updater.SCORE_DISPLAY_GAP + Params.frame_updater.SCORE_DISPLAY_WIDTH;
+                numeric_score = Math.floor(numeric_score/10);
+            }
+            display_width -= Params.frame_updater.SCORE_DISPLAY_GAP;
+            numeric_score = game_manager.curr_score;
+            display_score = (Params.frame_updater.WIDTH_OF_SCREEN + display_width)/2 - display_width;
+
+            while (numeric_score > 0){
+                this._canvas.drawImage(AssetManager.getImg(numeric_score % 10), display_score, Params.frame_updater.SCORE_DISPLAY_Y);
+                display_score -= Params.frame_updater.SCORE_DISPLAY_WIDTH + Params.frame_updater.SCORE_DISPLAY_GAP;
+                numeric_score = Math.floor(numeric_score/10);
+            }
+        }
+    },
+
     _movePlatform: function(){
         for (var i = 0; i < Params.frame_updater.NUM_OF_PLATFORM; i++){
             if (!game_manager.gameover){
                 this._platform[i] -= Params.game_manager.BIRD_X_SPEED;
-                if (this._platform[i] <= -Params.game_manager.WIDTH_OF_SCREEN){
-                    this._platform[i] += Params.game_manager.WIDTH_OF_SCREEN * 2;
+                if (this._platform[i] <= -Params.frame_updater.WIDTH_OF_SCREEN){
+                    this._platform[i] += Params.frame_updater.WIDTH_OF_SCREEN * 2;
                 }
             }
         }

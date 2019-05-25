@@ -26,4 +26,19 @@ AssetManager.loadComplete = function(){
     game_manager = new GameManager();
     frame_updater = new FrameUpdater();
     game_manager.startGame();
-}
+
+
+    // detect spacebar keystroke
+    document.body.onkeydown = function(e){
+        if(e.keyCode == 32 && Params.game_manager.PLAY_MODE === 0){
+            if (game_manager.gameover){
+                game_manager.gameover = false;
+                game_manager.startGame();
+            }
+
+            game_manager.solo_bird.flap(true);
+            console.log("flapped");
+        }
+    }   
+} 
+
