@@ -72,7 +72,7 @@ FrameUpdater.prototype = {
     },
 
     _drawBird: function(){
-        if (Params.game_manager.PLAY_MODE === 0){
+        if (Params.game_manager.PLAY_MODE === 0){   // human player
             this._canvas.save();
             this._canvas.translate(game_manager.solo_bird.x, game_manager.solo_bird.y);
             if (!game_manager.gameover){
@@ -80,6 +80,15 @@ FrameUpdater.prototype = {
             }
             this._canvas.drawImage(AssetManager.getImg("red_bird"), -24, -24);
             this._canvas.restore();
+        }else if (Params.game_manager.PLAY_MODE === 1){     // ai player
+
+            for (var i = 0; i < Constant.POPULATION; i++){
+                this._canvas.save();
+                this._canvas.translate(game_manager.generation.population[i].x, game_manager.generation.population[i].y);
+                this._canvas.rotate(Math.min(game_manager.generation.population[i].speed * 7, 90) * Math.PI /180);
+                this._canvas.drawImage(AssetManager.getImg("blue_bird"), -24, -24);
+                this._canvas.restore();
+            }
         }
     },
 

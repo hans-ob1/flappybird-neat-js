@@ -1,4 +1,5 @@
 function Bird(){
+    this.brain;
     this.init();
 }
 
@@ -9,11 +10,14 @@ Bird.prototype = {
         this.y = Params.game_manager.BIRD_INIT_Y;
         this.speed = 0;
         this.isAlive = true;
+        this.fitness = 0;
     },
 
     flap: function(doFlap){
-        if (this.isAlive && doFlap){
-            this.speed = -Params.game_manager.BIRD_Y_SPEED;
+        if (this.isAlive){
+            this.fitness++;
+            if (doFlap)
+                this.speed = -Params.game_manager.BIRD_Y_SPEED;
         }
         this.speed += Params.game_manager.GRAVITY;
         this.y += this.speed;
@@ -28,5 +32,9 @@ Bird.prototype = {
 
         this.speed += Params.game_manager.BIRD_HOVER_GRAVITY;
         this.y += this.speed;
+    },
+
+    getBirdHeight: function(){
+        return this.y;
     }
 }

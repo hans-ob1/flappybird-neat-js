@@ -17,20 +17,25 @@ GameManager.prototype = {
         this.pipe_x_pos = [];
         this.pipe_y_height = [];
 
+        // human play
         if (Params.game_manager.PLAY_MODE === 0){
-
-            // new bird
             this.solo_bird = new Bird();
-
-            if (!this.gameover){
-                // Initialize the position of pipes
-                for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
-                    this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * (0.33*i + 1);
-                    this.pipe_y_height[i] = this._getPipeHeight();
-                }
-                this.pipe_x_pos[Params.game_manager.NUM_OF_PIPES] = Number.MAX_SAFE_INTEGER;
-            }
         }
+        // AI play
+        else if (Params.game_manager.PLAY_MODE === 1){
+            this.gameover = false;
+            this.numAlive = Constant.POPULATION;
+            this.generation = new Generation();
+        }
+
+        if (!this.gameover){
+            // Initialize the position of pipes
+            for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
+                this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * (0.33*i + 1);
+                this.pipe_y_height[i] = this._getPipeHeight();
+            }
+            this.pipe_x_pos[Params.game_manager.NUM_OF_PIPES] = Number.MAX_SAFE_INTEGER;
+        }        
 
         this.timerGame();
         frame_updater.initFrame();
@@ -44,15 +49,20 @@ GameManager.prototype = {
                 this._findNearestPipe();
                 this._moveBird();
             }else{
-                // hover bird
-                this.solo_bird.hover();
+                this.solo_bird.hover();     // hover
             }
-
-            this._checkGameStatus();
-
-            // update the frame for each cycle
-            frame_updater.updateFrame();
+        }else if (Params.game_manager.PLAY_MODE === 1){
+            if (!this.gameover){
+                this._movePipeX();
+                this._findNearestPipe();
+                this._moveBird();
+            }
         }
+
+        this._checkGameStatus();
+
+        // update the frame for each cycle
+        frame_updater.updateFrame();        
     },
 
     timerGame: function(){
@@ -67,6 +77,14 @@ GameManager.prototype = {
             },
             Params.frame_updater.FRAME_RATE //measured in miliseconds
         )
+    },
+
+    getNearestPipeDist: function(){
+        return (this.pipe_x_pos[this.nearest_pipe] - Params.game_manager.BIRD_INIT_X) / Params.frame_updater.WIDTH_OF_SCREEN;
+    },
+
+    getNearestPipeHeight: function(){
+        return this.pipe_y_height[this.nearest_pipe];
     },
 
     _getPipeHeight: function(){
@@ -89,8 +107,7 @@ GameManager.prototype = {
     },
 
     _moveBird: function(){
-        // human play
-        if (Params.game_manager.PLAY_MODE === 0){
+        if (Params.game_manager.PLAY_MODE === 0){   // human play
             this.solo_bird.flap(false);
 
             if (this.solo_bird.isAlive){
@@ -125,6 +142,44 @@ GameManager.prototype = {
             if (this.solo_bird.y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y){
                 this.solo_bird.y = Params.game_manager.PlATFORM_Y + Params.game_manager.BIRD_RADIUS;
             }
+        }else if (Params.game_manager.PLAY_MODE === 1){     // ai player
+
+            this.generation.triggerFlap();
+            for (var i = 0; i < Constant.POPULATION; i++){
+                if (this.generation.population[i].isAlive) {
+                    this.generation.population[i].score = this.curr_score;
+
+                    if (this.generation.population[i].y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y) {
+                        this.generation.population[i].isAlive = false;
+                    }
+                    else if (this.generation.population[i].y <= -Params.game_manager.BIRD_RADIUS) {
+                        this.generation.population[i].isAlive = false;
+                    }
+                    else if (this.pipe_x_pos[this.nearest_pipe] - Params.game_manager.BIRD_INIT_X <= Params.game_manager.BIRD_RADIUS) {
+                        // upper pipe
+                        if (this.generation.population[i].y - Params.game_manager.BIRD_RADIUS <= this.pipe_y_height[this.nearest_pipe]){
+                            this.generation.population[i].isAlive = false;
+                        }
+                        // lower pipe
+                        else if (this.generation.population[i].y + Params.game_manager.BIRD_RADIUS >= this.pipe_y_height[this.nearest_pipe] + Params.game_manager.GAP_PIPE){
+                            this.generation.population[i].isAlive = false;
+                        }
+                    }
+
+                    // death count
+                    if (!this.generation.population[i].isAlive) {
+                        this.numAlive--;
+                    }
+                } else if (!this.gameover) {
+
+                    // move back the dead bodies
+                    this.generation.population[i].x -= Params.game_manager.BIRD_X_SPEED;
+                }
+
+                if (this.generation.population[i].y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y) {
+                    this.generation.population[i].y = Params.game_manager.PlATFORM_Y + Params.game_manager.BIRD_RADIUS;
+                }
+            }
         }
     },
 
@@ -139,12 +194,23 @@ GameManager.prototype = {
     },
 
     _checkGameStatus: function(){
-        if (Params.game_manager.PLAY_MODE === 0){
+
+        if (Params.game_manager.PLAY_MODE === 0){   // human player
             if (!this.solo_bird.isAlive && !this.gameover){
                 var self = this;
                 setTimeout(function(){
                     clearInterval(timer);
                     self.startGame();
+                });
+                this.gameover = true;
+            }
+        }else if (Params.game_manager.PLAY_MODE === 1){     // ai player
+            if(!this.numAlive && !this.gameover){
+                var self = this;
+                setTimeout(function(){
+                    clearInterval(timer);
+                    self.generation.getSummary();
+                    self.startGame();                    
                 });
                 this.gameover = true;
             }

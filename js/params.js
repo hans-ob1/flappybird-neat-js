@@ -4,7 +4,7 @@ var Params = {
         WIDTH_OF_SCREEN: 672,
         HEIGHT_OF_SCREEN: 512,
         NUM_OF_PLATFORM: 4,
-        FRAME_RATE: 12, //milliseconds
+        FRAME_RATE: 0, //milliseconds
 
         // score
         SCORE_DISPLAY_Y: 20,
@@ -35,8 +35,7 @@ var Params = {
 
         GRAVITY: 0.25,
 
-        PLAY_MODE: 0 // 0 - human, 1 - NEAT, 2 - winning NEAT
+        PLAY_MODE: 1 // 0 - human, 1 - NEAT, 2 - winning NEAT
     }
-
 
 };
