@@ -57,7 +57,6 @@ Network.prototype = {
     },
 
     _activation: function(x){
-        // sigmoid
         return 2 / (1 + Math.exp(-4.9 * x)) - 1;
     },
 
@@ -78,11 +77,12 @@ Network.prototype = {
     },
 
     forwardFlow: function(pipe_distance, pipe_height, bird_height){
+
         // return true or false for performing an action
         this._nodes[Constant.IDX_BIAS] = 1;
         this._nodes[Constant.IDX_PIPE_DIST] = pipe_distance;
         this._nodes[Constant.IDX_PIPE_TOP] = (bird_height - pipe_height)/Params.frame_updater.HEIGHT_OF_SCREEN;
-        this._nodes[Constant.IDX_BIRD_HEIGHT] = 0;
+        this._nodes[Constant.IDX_BIRD_HEIGHT] =((pipe_height + Params.game_manager.GAP_PIPE) - bird_height)/Params.frame_updater.HEIGHT_OF_SCREEN;
         this._nodes[Constant.IDX_OUTPUT] = 0;
 
         for (var i = Constant.NUM_INPUTS + 1; i <= this.size_of_nodes; i++)
@@ -173,9 +173,9 @@ Generation.prototype = {
                 }else{
                     child.brain._edges[i][j] = this.population[parentA].brain._edges[i][j];
                 }
+
             }
         }
-
 
         if (Math.random() <= Constant.MUTATE_PROB)
             child.brain.mutate();
