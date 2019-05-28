@@ -96,7 +96,20 @@ GameManager.prototype = {
     _movePipeX: function(){
         for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
             // moving the pipe closer to the bird
-            this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED;
+
+            if (Math.random() > 0.75){
+                this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED*1.5;
+            }else{
+                this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED;
+            }
+
+            if (Math.random() > 0.75){
+                this.pipe_y_height[i] -= 3;
+            }else if (Math.random() < 0.25){
+                this.pipe_y_height[i] += 3;
+            }
+
+            // update if the pipe past the screen
             if (this.pipe_x_pos[i] <= -Params.game_manager.WIDTH_OF_PIPE){
                 this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * 0.30 *  Params.game_manager.NUM_OF_PIPES - Params.game_manager.WIDTH_OF_PIPE;
                 this.pipe_y_height[i] = this._getPipeHeight();
@@ -110,8 +123,8 @@ GameManager.prototype = {
 
     _moveBird: function(){
         if (Params.game_manager.PLAY_MODE === 0){   // human play
-            this.solo_bird.flap(false);
 
+            this.solo_bird.flap(false);
             if (this.solo_bird.isAlive){
 
                 // update the bird score
