@@ -7,6 +7,9 @@ function GameManager(){
     this.pipe_y_height = [];
     this.nearest_pipe = Params.game_manager.NUM_OF_PIPES;
 
+    if (Params.game_manager.PLAY_MODE === 1)
+        this.generation = new Generation();
+
 }
 
 GameManager.prototype = {
@@ -25,16 +28,15 @@ GameManager.prototype = {
         else if (Params.game_manager.PLAY_MODE === 1){
             this.gameover = false;
             this.numAlive = Constant.POPULATION;
-            this.generation = new Generation();
         }
 
         if (!this.gameover){
             // Initialize the position of pipes
             for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
-                this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * (0.33*i + 1);
+                this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * (0.30*i + 1);
                 this.pipe_y_height[i] = this._getPipeHeight();
             }
-            this.pipe_x_pos[Params.game_manager.NUM_OF_PIPES] = Number.MAX_SAFE_INTEGER;
+            this.pipe_x_pos[Params.game_manager.NUM_OF_PIPES] = Number.MAX_VALUE;
         }        
 
         this.timerGame();
@@ -80,7 +82,7 @@ GameManager.prototype = {
     },
 
     getNearestPipeDist: function(){
-        return (this.pipe_x_pos[this.nearest_pipe] - Params.game_manager.BIRD_INIT_X) / Params.frame_updater.WIDTH_OF_SCREEN;
+        return (this.pipe_x_pos[this.nearest_pipe] - Params.game_manager.BIRD_INIT_X) / (Params.frame_updater.WIDTH_OF_SCREEN / 2);
     },
 
     getNearestPipeHeight: function(){
@@ -96,7 +98,7 @@ GameManager.prototype = {
             // moving the pipe closer to the bird
             this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED;
             if (this.pipe_x_pos[i] <= -Params.game_manager.WIDTH_OF_PIPE){
-                this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * 0.33 *  Params.game_manager.NUM_OF_PIPES - Params.game_manager.WIDTH_OF_PIPE;
+                this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * 0.30 *  Params.game_manager.NUM_OF_PIPES - Params.game_manager.WIDTH_OF_PIPE;
                 this.pipe_y_height[i] = this._getPipeHeight();
             }
         }

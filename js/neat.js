@@ -11,12 +11,12 @@ Constant = {
     IDX_OUTPUT: 0,
 
     NUM_INPUTS: 4,
-    STEPSIZE: 0.05,
+    STEPSIZE: 0.01,
     ADDNODE_PROB: 0.5,
 
     // Generation Params
-    POPULATION: 15,
-    SURVIVORS: 5,
+    POPULATION: 30,
+    SURVIVORS: 10,
     MUTATE_PROB: 0.5
 }
 
@@ -57,11 +57,11 @@ Network.prototype = {
     },
 
     _activation: function(x){
-        return 2 / (1 + Math.exp(-4.9 * x)) - 1;
+        return Math.max(0, x);
     },
 
     _changeWeight: function(node_start, node_end){
-        this._edges[node_start][node_end] += Math.random() * Constant.STEPSIZE * 2 - Constant.STEPSIZE;
+        this._edges[node_start][node_end] += (Math.random() * Constant.STEPSIZE * 2) - Constant.STEPSIZE;
     },
 
     _addEdge: function(node_start, node_end){
@@ -88,9 +88,11 @@ Network.prototype = {
         for (var i = Constant.NUM_INPUTS + 1; i <= this.size_of_nodes; i++)
             this._nodes[i] = 0;
 
+        console.log(this.size_of_nodes);
+
         for (var i = 1; i <= this.size_of_nodes; i++){
             if (i > Constant.NUM_INPUTS){
-                this._nodes[i] = this._activation(this.nodes[i]);
+                this._nodes[i] = this._activation(this._nodes[i]);
             }
             for (var j in this._edges[i]){
                 this._nodes[j] += this._nodes[i]*this._edges[i][j];
@@ -166,10 +168,12 @@ Generation.prototype = {
             child.brain._edges[i] = [];
             for (var j in this.population[parentA].brain._edges[i]){
                 if (this.population[parentB].brain._edges.hasOwnProperty(i) && this.population[parentB].brain._edges[i].hasOwnProperty(j)){
-                    if (Math.random() < 0.5)
+                    if (Math.random() < 0.5){
                         child.brain._edges[i][j] = this.population[parentA].brain._edges[i][j];
-                    else
+                    }
+                    else{
                         child.brain._edges[i][j] = this.population[parentB].brain._edges[i][j];
+                    }
                 }else{
                     child.brain._edges[i][j] = this.population[parentA].brain._edges[i][j];
                 }

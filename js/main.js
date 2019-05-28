@@ -8,6 +8,8 @@ AssetManager.loadImg([
     'red_bird',
     'pipe_down',
     'pipe_up',
+    'pipe_down_red',
+    'pipe_up_red',
     'platform',
     '0',
     '1',

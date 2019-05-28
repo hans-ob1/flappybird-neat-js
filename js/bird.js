@@ -15,7 +15,7 @@ Bird.prototype = {
 
     flap: function(doFlap){
         if (this.isAlive){
-            this.fitness++;
+            this.fitness += (1 + this.score*100);
             if (doFlap)
                 this.speed = -Params.game_manager.BIRD_Y_SPEED;
         }

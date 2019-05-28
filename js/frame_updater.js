@@ -66,8 +66,15 @@ FrameUpdater.prototype = {
 
     _drawPipes: function(){
         for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
-            this._canvas.drawImage(AssetManager.getImg("pipe_up"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]+Params.game_manager.GAP_PIPE);
-            this._canvas.drawImage(AssetManager.getImg("pipe_down"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]-Params.game_manager.HEIGHT_OF_PIPE);
+
+            if (i == game_manager.nearest_pipe){
+                this._canvas.drawImage(AssetManager.getImg("pipe_up_red"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]+Params.game_manager.GAP_PIPE);
+                this._canvas.drawImage(AssetManager.getImg("pipe_down_red"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]-Params.game_manager.HEIGHT_OF_PIPE);                
+            }
+            else{
+                this._canvas.drawImage(AssetManager.getImg("pipe_up"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]+Params.game_manager.GAP_PIPE);
+                this._canvas.drawImage(AssetManager.getImg("pipe_down"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]-Params.game_manager.HEIGHT_OF_PIPE);
+            }
         }
     },
 
