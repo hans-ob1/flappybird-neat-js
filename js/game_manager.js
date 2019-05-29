@@ -5,6 +5,7 @@ function GameManager(){
     // game elements
     this.pipe_x_pos = [];
     this.pipe_y_height = [];
+    this.pipe_nature = [];
     this.nearest_pipe = Params.game_manager.NUM_OF_PIPES;
 
     if (Params.game_manager.PLAY_MODE === 1)
@@ -35,6 +36,7 @@ GameManager.prototype = {
             for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
                 this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * (0.30*i + 1);
                 this.pipe_y_height[i] = this._getPipeHeight();
+                this.pipe_nature[i] = Math.floor((Math.random() * 4));
             }
             this.pipe_x_pos[Params.game_manager.NUM_OF_PIPES] = Number.MAX_VALUE;
         }        
@@ -94,25 +96,26 @@ GameManager.prototype = {
     },
 
     _movePipeX: function(){
+
         for (var i = 0; i < Params.game_manager.NUM_OF_PIPES; i++){
-            // moving the pipe closer to the bird
 
-            if (Math.random() > 0.75){
-                this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED*1.5;
+            if (this.pipe_nature[i] === 0){
+                
+                
+
+            }else if (this.pipe_nature[i] === 1){
+                
+            }else if (this.pipe_nature[i] === 2){
+
             }else{
-                this.pipe_x_pos[i] -= Params.game_manager.BIRD_X_SPEED;
-            }
 
-            if (Math.random() > 0.75){
-                this.pipe_y_height[i] -= 3;
-            }else if (Math.random() < 0.25){
-                this.pipe_y_height[i] += 3;
             }
 
             // update if the pipe past the screen
             if (this.pipe_x_pos[i] <= -Params.game_manager.WIDTH_OF_PIPE){
                 this.pipe_x_pos[i] = (Params.frame_updater.WIDTH_OF_SCREEN + Params.game_manager.WIDTH_OF_PIPE) * 0.30 *  Params.game_manager.NUM_OF_PIPES - Params.game_manager.WIDTH_OF_PIPE;
                 this.pipe_y_height[i] = this._getPipeHeight();
+                this.pipe_nature[i] = Math.floor((Math.random() * 4));
             }
         }
 
