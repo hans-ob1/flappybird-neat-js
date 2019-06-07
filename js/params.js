@@ -13,20 +13,24 @@ var Params = {
     },
 
     game_manager: {
-        NUM_OF_PIPES: 1,
+        NUM_OF_PIPES: 6,
         WIDTH_OF_PIPE: 52,
         HEIGHT_OF_PIPE: 500,
         POS_MIN_Y_PIPE: 100,
         POS_MAX_Y_PIPE: 305,
         GAP_PIPE: 100,
+
+        // adversarial params
+        ADVERSE_MODE: 0,                // 1 - ON, 0 - OFF
         MOVE_PIPE_PROB: 0.5,
+        PIPE_SPACING_PERCENTAGE: 0.30, // relative to screen width 
 
         PlATFORM_Y: 495,
 
         BIRD_INIT_X: 100,
         BIRD_INIT_Y: 200,
         BIRD_RADIUS: 12,
-        BIRD_Y_SPEED: 4.8,
+        BIRD_Y_SPEED: 4.5,
         BIRD_X_SPEED: 2, // x-coord of the bird
 
         BIRD_HOVER_MAX_Y: 250,
@@ -34,9 +38,9 @@ var Params = {
         BIRD_HOVER_SPEED: 1,
         BIRD_HOVER_GRAVITY: 0.04,
 
-        GRAVITY: 0.2,
+        GRAVITY: 0.22,
 
-        PLAY_MODE: 0 // 0 - human, 1 - NEAT, 2 - winning NEAT
+        PLAY_MODE: 1 // 0 - human, 1 - NEAT, 2 - human vs AI
     }
 
 };

@@ -25,6 +25,7 @@ AssetManager.loadImg([
 
 AssetManager.loadComplete = function(){
     console.log("Images Loaded");
+    control_panel = new ControlPanel();
     game_manager = new GameManager();
     frame_updater = new FrameUpdater();
     game_manager.startGame();

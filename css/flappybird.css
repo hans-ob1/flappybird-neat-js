@@ -2,6 +2,7 @@ h1 {
     text-align: center;
     font-size: 24px;
     margin: 5px 0;
+    padding-right: 140px;
 }
 
 h2 {
@@ -23,45 +24,44 @@ hr {
 }
 
 #main-content {
-    width: 850px;
+    width: 800px;
     height: auto;
     margin: 10px auto;
 }
 
-#canvas-div {
+#main-frame {
     width: 672px;
     height: 512px;
-    float: left;
     border: 1px solid #000;
 }
 
-#control-div {
-    width: 500px;
+#dashboard {
+    margin-top: 30px;
     height: 512px;
-    float: right;
+    width: 672px;
 }
 
-#control-div > div {
+#dashboard > div {
+    text-align: center;
     vertical-align: top;
-    margin-right: 5px;
     display: inline-block;
-    width: 235px;
+    width: 221px;
 }
 
-#control-div > div > div {
+#dashboard > div > div {
     height: 305px;
     overflow-x: hidden;
     overflow-y: scroll;
 }
 
-.score-table {
+.panel-table {
     border-collapse: collapse;
     margin: auto;
 }
 
-.score-table td, .score-table th {
+.panel-table td, .panel-table th {
     font-size: 14px;
     border: 1px solid #000;
-    padding: 1px 12px 1px 12px;
-    text-align:center
+    padding: 6px 14px 6px 14px;
+    text-align:center;
 }

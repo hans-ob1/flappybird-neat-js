@@ -1,20 +1,105 @@
 <html>
     <head>
-        <title>Flappy Bird NEAT</title>
-        <link rel="stylesheet" href="css/flappy.css" type="text/css"/>
-        <script type="text/javascript" src="js/params.js"></script>
-        <script type="text/javascript" src="js/bird.js"></script>
-        <script type="text/javascript" src="js/neat.js"></script>
-        <script type="text/javascript" src="js/game_manager.js"></script>
-        <script type="text/javascript" src="js/frame_updater.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
+        <title>AI Play Impossible Flappy Bird</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/flappybird.css" type="text/css"/>   
     </head>
 
     <body>
         <div id="main-content">
-            <div id="canvas-div">
+            <h1 class="header">AI Play Impossible Flappy Bird</h1>
+
+            <!---->
+            <div id="main-frame">
                 <canvas id="canvas" width="672" height="512"></canvas>
-            </div>
+            </div> 
+            
+            <div id="dashboard">
+                <h2>Control Panel</h2>
+                <hr>
+
+                <div>
+                    <table class="panel-table">
+                        <thead>
+                            <th>Play Mode</th>
+                        </thead>
+                        <tbody id="playmode">
+                            <tr>
+                                <td>
+                                    <input type="radio" name="mode" value="human">Human Play<br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="radio" name="mode" value="ai" checked>AI Play (NEAT)<br>
+                                </td>                              
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="radio" name="mode" value="aivshuman">AI vs Human<br>
+                                </td>                                  
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <table class="panel-table">
+                        <thead>
+                            <th>Game Difficulty</th>
+                        </thead>
+                        <tbody id="difficulty">
+                            <tr>
+                                <td>
+                                    <input type="radio" name="level" value="normal" checked>Normal<br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="radio" name="level" value="impossible">Impossible<br>
+                                </td>                              
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <table class="panel-table">
+                        <thead>
+                            <th>Settings</th>
+                        </thead>
+                        <tbody id="settings">
+                            <tr>
+                                <td>
+                                    <button id="freeze-btn" type="button">Freeze (Save AI model)</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Frame Speed
+                                    <select id="frame-speed">
+                                        <option value="24">Very Slow</option>
+                                        <option value="18">Slow</option>
+                                        <option value="12">Normal</option>
+                                        <option value="6">Fast</option>
+                                        <option value="0">Very Fast</option>
+                                    </select>
+                                </td>                              
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
         </div>
     </body>
+
+    <footer>
+        <script type="text/javascript" src="js/params.js"></script>
+        <script type="text/javascript" src="js/bird.js"></script>
+        <script type="text/javascript" src="js/neat.js"></script>
+        <script type="text/javascript" src="js/game_manager.js"></script>
+        <script type="text/javascript" src="js/control_panel.js"></script>
+        <script type="text/javascript" src="js/frame_updater.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+    </footer>
 </html>
