@@ -112,7 +112,7 @@ FrameUpdater.prototype = {
             // draw hidden layer
             if (_bestBrain.size_of_nodes > Constant.NUM_INPUTS+1){
 
-                for (var i = Constant.NUM_INPUTS+1; i < _bestBrain.size_of_nodes+1; i++){
+                for (var i = Constant.NUM_INPUTS+1; i < _bestBrain.size_of_nodes+2; i++){
                     this._canvas.beginPath();
                     this._canvas.arc(out_node_x - node_gap_x, first_in_node_y + node_gap_y*(i-Constant.NUM_INPUTS), circle_radius, circle_start, 2*Math.PI);
                     this._canvas.stroke();
