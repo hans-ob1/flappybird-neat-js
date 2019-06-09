@@ -50,6 +50,11 @@ FrameUpdater.prototype = {
         this._drawPlatform();
         this._drawBird();
         this._drawScore();
+
+        // visualize brain if its AI
+        if(Params.game_manager.PLAY_MODE >= 1){
+            this._drawBrainVisual();
+        }
     },
 
     // external functions
@@ -75,6 +80,91 @@ FrameUpdater.prototype = {
                 this._canvas.drawImage(AssetManager.getImg("pipe_up"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i] + game_manager.pipe_gap[i]);
                 this._canvas.drawImage(AssetManager.getImg("pipe_down"), game_manager.pipe_x_pos[i], game_manager.pipe_y_height[i]-Params.game_manager.HEIGHT_OF_PIPE);
             }
+        }
+    },
+
+    _drawBrainVisual: function(){
+        // draw the current strongest brain
+        var _bestBrain = game_manager.generation.getBestBrain();
+        if (_bestBrain){
+
+            var circle_start = 0;
+            var circle_radius = 5;
+
+            var out_node_x = Math.floor(Params.frame_updater.WIDTH_OF_SCREEN*0.95);
+            var out_node_y = Math.floor(Params.frame_updater.HEIGHT_OF_SCREEN*0.9);
+
+            var node_gap_y = 20;
+            var node_gap_x = 60;
+            var has_hidden = false;
+
+            var _nodes_pos = [];
+
+            // calculate first input node position
+            if (Constant.NUM_INPUTS % 2){
+                var first_in_node_y = out_node_y - (Math.floor(Constant.NUM_INPUTS/2) + 0.5)*node_gap_y;
+            }else{
+                var first_in_node_y = out_node_y - (Math.floor(Constant.NUM_INPUTS/2) + 1)*node_gap_y;
+            }
+
+            _nodes_pos[Constant.IDX_OUTPUT] = [out_node_x, out_node_y];
+
+            // draw hidden layer
+            if (_bestBrain.size_of_nodes > Constant.NUM_INPUTS+1){
+
+                for (var i = Constant.NUM_INPUTS+1; i < _bestBrain.size_of_nodes+1; i++){
+                    this._canvas.beginPath();
+                    this._canvas.arc(out_node_x - node_gap_x, first_in_node_y + node_gap_y*(i-Constant.NUM_INPUTS), circle_radius, circle_start, 2*Math.PI);
+                    this._canvas.stroke();
+                    this._canvas.fillStyle = 'red';
+                    this._canvas.fill();
+
+                    _nodes_pos[i] = [out_node_x - node_gap_x, first_in_node_y + node_gap_y*(i-Constant.NUM_INPUTS)];
+                }
+
+                has_hidden = true;
+            }
+
+            // draw output node
+            this._canvas.beginPath();
+            this._canvas.arc(out_node_x, out_node_y, circle_radius, circle_start, 2*Math.PI);
+            this._canvas.fillStyle = 'green';
+            this._canvas.fill();
+
+            // draw input nodes
+            for (var i = 1; i < Constant.NUM_INPUTS+1; i++){
+                this._canvas.beginPath();
+                if (has_hidden){
+                    this._canvas.arc(out_node_x - (node_gap_x*2), first_in_node_y + node_gap_y*(i-1), circle_radius, circle_start, 2*Math.PI);
+                    _nodes_pos[i] = [out_node_x - (node_gap_x*2), first_in_node_y + node_gap_y*(i-1)];
+                }else{
+                    this._canvas.arc(out_node_x - node_gap_x, first_in_node_y + node_gap_y*(i-1), circle_radius, circle_start, 2*Math.PI);
+                    _nodes_pos[i] = [out_node_x - node_gap_x, first_in_node_y + node_gap_y*(i-1)];
+                }
+                this._canvas.fillStyle = 'blue';
+                this._canvas.fill();
+
+            }
+
+            // draw edges
+            var edge_idx_array = Object.getOwnPropertyNames(_bestBrain._edges);
+            edge_idx_array.pop();
+            for (var i = 0; i < edge_idx_array.length; i++){
+                var idx_from = edge_idx_array[i];
+
+                edge_idx_array_to = Object.getOwnPropertyNames(_bestBrain._edges[idx_from]);
+                edge_idx_array_to.pop();
+
+                for(var j = 0; j < edge_idx_array_to.length; j++){
+                    var idx_to = edge_idx_array_to[j];
+
+                    this._canvas.beginPath();
+                    this._canvas.moveTo(_nodes_pos[idx_from][0], _nodes_pos[idx_from][1]);
+                    this._canvas.lineTo(_nodes_pos[idx_to][0], _nodes_pos[idx_to][1]);
+                    this._canvas.stroke();                   
+                }
+            }
+
         }
     },
 

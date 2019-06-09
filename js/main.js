@@ -40,7 +40,6 @@ AssetManager.loadComplete = function(){
             }
 
             game_manager.solo_bird.flap(true);
-            console.log("flapped");
         }
     }   
 } 

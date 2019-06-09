@@ -8,16 +8,17 @@ Constant = {
     IDX_PIPE_DIST: 2,
     IDX_PIPE_TOP: 3,
     IDX_BIRD_HEIGHT: 4,
+    IDX_PIPE_SPEED: 5,
     IDX_OUTPUT: 0,
 
-    NUM_INPUTS: 4,
-    STEPSIZE: 0.01,
+    NUM_INPUTS: 5,
+    STEPSIZE: 0.05,
     ADDNODE_PROB: 0.5,
 
     // Generation Params
     POPULATION: 30,
     SURVIVORS: 10,
-    MUTATE_PROB: 0.5
+    MUTATE_PROB: 0.3
 }
 
 // Neural Network that controls each bird
@@ -76,19 +77,18 @@ Network.prototype = {
         this._edges[node_start][node_end] = 0;
     },
 
-    forwardFlow: function(pipe_distance, pipe_height, bird_height, pipe_gap){
+    forwardFlow: function(pipe_distance, pipe_height, bird_height, pipe_gap, pipe_speed){
 
         // return true or false for performing an action
         this._nodes[Constant.IDX_BIAS] = 1;
         this._nodes[Constant.IDX_PIPE_DIST] = pipe_distance;
         this._nodes[Constant.IDX_PIPE_TOP] = (bird_height - pipe_height)/Params.frame_updater.HEIGHT_OF_SCREEN;
         this._nodes[Constant.IDX_BIRD_HEIGHT] =((pipe_height + pipe_gap) - bird_height)/Params.frame_updater.HEIGHT_OF_SCREEN;
+        this._nodes[Constant.IDX_PIPE_SPEED] = pipe_speed/Params.frame_updater.HEIGHT_OF_SCREEN;
         this._nodes[Constant.IDX_OUTPUT] = 0;
 
         for (var i = Constant.NUM_INPUTS + 1; i <= this.size_of_nodes; i++)
             this._nodes[i] = 0;
-
-        console.log(this.size_of_nodes);
 
         for (var i = 1; i <= this.size_of_nodes; i++){
             if (i > Constant.NUM_INPUTS){
@@ -139,10 +139,30 @@ Generation.prototype = {
         this.gen_num++;
     },
 
+    getBestBrain: function(){
+
+        // get current best brain
+        var best_bird_idx = -1;
+        var best_bird_fitness = 0;
+        for (var i = 0; i < Constant.POPULATION; i++){
+            if (this.population[i].fitness > best_bird_fitness){
+                best_bird_fitness = this.population[i].fitness;
+                best_bird_idx = i;
+            }
+        }
+
+        if (best_bird_idx === -1){
+            return null;
+        }else{
+            return this.population[best_bird_idx].brain;
+        }
+
+    },
+
     triggerFlap: function(){
         for (var i = 0; i < Constant.POPULATION; i++){
             if (this.population[i].isAlive){
-                if (this.population[i].brain.forwardFlow(game_manager.getNearestPipeDist(),game_manager.getNearestPipeHeight(),this.population[i].getBirdHeight(),game_manager.getNearestPipeGap())){
+                if (this.population[i].brain.forwardFlow(game_manager.getNearestPipeDist(),game_manager.getNearestPipeHeight(),this.population[i].getBirdHeight(),game_manager.getNearestPipeGap(), game_manager.getNearestPipeSpeedY())){
                     this.population[i].flap(true);
                 }else{
                     this.population[i].flap(false);

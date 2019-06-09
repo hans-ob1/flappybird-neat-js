@@ -9,7 +9,6 @@
         <div id="main-content">
             <h1 class="header">AI Play Impossible Flappy Bird</h1>
 
-            <!---->
             <div id="main-frame">
                 <canvas id="canvas" width="672" height="512"></canvas>
             </div> 
@@ -26,7 +25,7 @@
                         <tbody id="playmode">
                             <tr>
                                 <td>
-                                    <input type="radio" name="mode" value="human">Human Play<br>
+                                    <input type="radio" name="mode" value="human">Human Play **<br>
                                 </td>
                             </tr>
                             <tr>
@@ -34,13 +33,11 @@
                                     <input type="radio" name="mode" value="ai" checked>AI Play (NEAT)<br>
                                 </td>                              
                             </tr>
-                            <tr>
-                                <td>
-                                    <input type="radio" name="mode" value="aivshuman">AI vs Human<br>
-                                </td>                                  
-                            </tr>
                         </tbody>
                     </table>
+                    <p>
+                        ** Hit 'SPACE' to begin playing
+                    </p>                    
                 </div>
 
                 <div>
@@ -71,7 +68,7 @@
                         <tbody id="settings">
                             <tr>
                                 <td>
-                                    <button id="freeze-btn" type="button">Freeze (Save AI model)</button>
+                                    <button id="freeze-btn" type="button">Freeze Weights (Console)</button>
                                 </td>
                             </tr>
                             <tr>
@@ -89,6 +86,7 @@
                         </tbody>
                     </table>
                 </div>
+
             </div> 
         </div>
     </body>

@@ -1,7 +1,7 @@
 function ControlPanel(){
 
     // mode
-    this._mode = document.getElementsByName("mode")
+    this._mode = document.getElementsByName("mode");
     for (var i = 0; i < this._mode.length; i++) {
         this._mode[i].addEventListener('change', function() {
             if (this.value === 'human'){
@@ -12,12 +12,11 @@ function ControlPanel(){
                 
             }
             game_manager._resetGame();
-            console.log(this.value)
         });
     }
 
     // difficulty
-    this._level = document.getElementsByName("level")
+    this._level = document.getElementsByName("level");
     for (var i = 0; i < this._level.length; i++) {
         this._level[i].addEventListener('change', function() {
             if (this.value === 'normal'){
@@ -29,7 +28,7 @@ function ControlPanel(){
     }
 
     // setting
-    this._framespeed = document.getElementById("frame-speed")
+    this._framespeed = document.getElementById("frame-speed");
     this._framespeed.options[2].selected = true;
     this._framespeed.onchange = function(){
         for (var i = 0; i < this.options.length; i++){
@@ -37,6 +36,12 @@ function ControlPanel(){
                 Params.frame_updater.FRAME_RATE = this.options[i].value
             }
         }
+    }
+
+    // harvest the best brain
+    this._freezebrain = document.getElementById("freeze-btn");
+    this._freezebrain.onclick = function(){
+        Params.game_manager.PRINT_BRAIN = true;
     }
 
 }

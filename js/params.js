@@ -40,7 +40,8 @@ var Params = {
 
         GRAVITY: 0.22,
 
-        PLAY_MODE: 1 // 0 - human, 1 - NEAT, 2 - human vs AI
+        PLAY_MODE: 1, // 0 - human, 1 - NEAT, 2 - human vs AI
+        PRINT_BRAIN: false
     }
 
 };
