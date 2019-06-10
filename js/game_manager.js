@@ -48,9 +48,9 @@ GameManager.prototype = {
 
                     // set initial pipe movement speed
                     if (Math.random() > 0.5)
-                        this.pipe_y_speed[i] = 0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = 0.4*Params.game_manager.PIPE_Y_SPEED;
                     else
-                        this.pipe_y_speed[i] = -0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = -0.4*Params.game_manager.PIPE_Y_SPEED;
 
                     // randomize pipe gap
                     this.pipe_gap[i] = Math.floor(0.8*Params.game_manager.GAP_PIPE + Math.random() * 40);
@@ -147,7 +147,7 @@ GameManager.prototype = {
                 }else if (this.pipe_nature[i] === 1){
                     // move pipe down (situation 1)
                     if (this.pipe_y_height[i] < Params.game_manager.POS_MAX_Y_PIPE + Params.game_manager.POS_MIN_Y_PIPE/2){
-                        this.pipe_y_speed[i] = 0.1*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = 0.4*Params.game_manager.PIPE_Y_SPEED;
                     }else{
                         this.pipe_y_speed[i] = 0;
                     }
@@ -157,7 +157,7 @@ GameManager.prototype = {
                 }else if (this.pipe_nature[i] === 2){
                     // move pipe up (situation 2)
                     if (this.pipe_y_height[i] > Params.game_manager.POS_MIN_Y_PIPE/2){
-                        this.pipe_y_speed[i] = -0.1*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = -0.4*Params.game_manager.PIPE_Y_SPEED;
                     }else{
                         this.pipe_y_speed[i] = 0;
                     }
@@ -167,10 +167,10 @@ GameManager.prototype = {
                 }else{
                     // move up and down (situation 3)
                     if (this.pipe_y_height[i] < Params.game_manager.POS_MIN_Y_PIPE/2 && this.pipe_y_speed[i] < 0){
-                        this.pipe_y_speed[i] = 0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = 0.4*Params.game_manager.PIPE_Y_SPEED;
                     }
                     else if (this.pipe_y_height[i] > Params.game_manager.POS_MAX_Y_PIPE + Params.game_manager.POS_MIN_Y_PIPE/2 && this.pipe_y_speed[i] > 0){
-                        this.pipe_y_speed[i] = -0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = -0.4*Params.game_manager.PIPE_Y_SPEED;
                     }
                     this.pipe_y_height[i] += this.pipe_y_speed[i];
                 }
@@ -185,9 +185,9 @@ GameManager.prototype = {
                 if (Params.game_manager.ADVERSE_MODE === 1){
                     this.pipe_nature[i] = Math.floor((Math.random() * 4));
                     if (Math.random() > 0.5)
-                        this.pipe_y_speed[i] = 0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = 0.4*Params.game_manager.PIPE_Y_SPEED;
                     else
-                        this.pipe_y_speed[i] = -0.2*Params.game_manager.BIRD_X_SPEED;
+                        this.pipe_y_speed[i] = -0.4*Params.game_manager.PIPE_Y_SPEED;
 
                     this.pipe_gap[i] = Math.floor(0.9*Params.game_manager.GAP_PIPE + Math.random() * 40);
                 }else{
