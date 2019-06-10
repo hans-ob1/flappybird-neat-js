@@ -83,8 +83,7 @@ GameManager.prototype = {
                 
                 if(Params.game_manager.PRINT_BRAIN){
                     _brain = this.generation.getBestBrain();
-                    console.log(_brain._edges);
-                    console.log(Object.getOwnPropertyNames(_brain._edges));
+                    console.log(_brain);
                     Params.game_manager.PRINT_BRAIN = false;
                 }
             }

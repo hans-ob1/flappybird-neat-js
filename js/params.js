@@ -9,7 +9,11 @@ var Params = {
         // score
         SCORE_DISPLAY_Y: 20,
         SCORE_DISPLAY_WIDTH: 24,
-        SCORE_DISPLAY_GAP: 2
+        SCORE_DISPLAY_GAP: 2,
+
+        // text
+        TEXT_DISPLAY_Y: 250,
+        TEXT_DISPLAY_X: 200,
     },
 
     game_manager: {

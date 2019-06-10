@@ -51,6 +51,9 @@ FrameUpdater.prototype = {
         this._drawBird();
         this._drawScore();
 
+        if(Params.game_manager.PLAY_MODE === 0 && game_manager.gameover)
+            this._drawText();
+
         // visualize brain if its AI
         if(Params.game_manager.PLAY_MODE >= 1){
             this._drawBrainVisual();
@@ -213,6 +216,12 @@ FrameUpdater.prototype = {
                 numeric_score = Math.floor(numeric_score/10);
             }
         }
+    },
+
+    _drawText: function(){
+        this._canvas.font = "25px Arial";
+        this._canvas.fillStyle = "darkgreen";
+        this._canvas.fillText("Hit 'Spacebar' to Begin!", Params.frame_updater.TEXT_DISPLAY_X, Params.frame_updater.TEXT_DISPLAY_Y);
     },
 
     _movePlatform: function(){
