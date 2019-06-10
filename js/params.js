@@ -28,7 +28,7 @@ var Params = {
         ADVERSE_MODE: 0,                // 1 - ON, 0 - OFF
         MOVE_PIPE_PROB: 0.5,
         PIPE_SPACING_PERCENTAGE: 0.4, // relative to screen width 
-        PIPE_Y_SPEED: 3.2,
+        PIPE_Y_SPEED: 3,
 
         PlATFORM_Y: 495,
 
