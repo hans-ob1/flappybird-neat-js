@@ -9,7 +9,10 @@ function ControlPanel(){
             }else if (this.value === 'ai'){
                 Params.game_manager.PLAY_MODE = 1;
             }else{
-                
+                Params.game_manager.PLAY_MODE = 2;
+
+                frame_updater._lastmsg = 'Red: Human, Blue: AI';
+                frame_updater._lastcolour = 'darkgreen';
             }
             game_manager._resetGame();
         });

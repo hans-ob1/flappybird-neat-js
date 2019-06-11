@@ -13,7 +13,9 @@ function GameManager(){
 
     this.nearest_pipe = Params.game_manager.NUM_OF_PIPES;
 
+    // ai params
     this.generation = new Generation();
+    this.champion_ai = new Bird();
 }
 
 GameManager.prototype = {
@@ -25,8 +27,12 @@ GameManager.prototype = {
         this.pipe_y_height = [];
 
         // human play
-        if (Params.game_manager.PLAY_MODE === 0){
+        if (Params.game_manager.PLAY_MODE === 0 || Params.game_manager.PLAY_MODE === 2){
             this.solo_bird = new Bird();
+
+            if (Params.game_manager.PLAY_MODE === 2){
+                this.champion_ai.init();
+            }
         }
         // AI play
         else if (Params.game_manager.PLAY_MODE === 1){
@@ -67,13 +73,14 @@ GameManager.prototype = {
 
     updateGame: function(){
 
-        if (Params.game_manager.PLAY_MODE === 0){
+        if (Params.game_manager.PLAY_MODE === 0 || Params.game_manager.PLAY_MODE === 2){
             if (!this.gameover){
                 this._movePipeX();
                 this._findNearestPipe();
                 this._moveBird();
             }else{
                 this.solo_bird.hover();     // hover
+                this.champion_ai.hover();
             }
         }else if (Params.game_manager.PLAY_MODE === 1){
             if (!this.gameover){
@@ -81,10 +88,12 @@ GameManager.prototype = {
                 this._findNearestPipe();
                 this._moveBird();
                 
-                if(Params.game_manager.PRINT_BRAIN){
-                    _brain = this.generation.getBestBrain();
-                    console.log(_brain);
+                if(Params.game_manager.PRINT_BRAIN){ 
+                    // inject brain to champion
+                    this.champion_ai.brain = this.generation.getBestBrain();
                     Params.game_manager.PRINT_BRAIN = false;
+
+                    console.log(this.champion_ai.brain);
                 }
             }
         }
@@ -202,7 +211,7 @@ GameManager.prototype = {
     },
 
     _moveBird: function(){
-        if (Params.game_manager.PLAY_MODE === 0){   // human play
+        if (Params.game_manager.PLAY_MODE === 0 || Params.game_manager.PLAY_MODE === 2){   // human play or human vs ai
 
             this.solo_bird.flap(false);
             if (this.solo_bird.isAlive){
@@ -231,12 +240,65 @@ GameManager.prototype = {
                     }
 
                 }
+            }else{
+                // move back the dead bodies
+                this.solo_bird.x -= Params.game_manager.BIRD_X_SPEED;                
+            }
+            
+            if (Params.game_manager.PLAY_MODE === 2){    //human vs ai
+
+                if (this.champion_ai.brain){
+                    if (this.champion_ai.brain.forwardFlow(game_manager.getNearestPipeDist(),game_manager.getNearestPipeHeight(),this.champion_ai.getBirdHeight(),game_manager.getNearestPipeGap(), game_manager.getNearestPipeSpeedY())){
+                        this.champion_ai.flap(true);
+                    }else{
+                        this.champion_ai.flap(false);
+                    }
+                }else{
+                    this.champion_ai.flap(false);
+                }
+
+                if (this.champion_ai.isAlive){
+                    this.champion_ai.score = this.curr_score;
+
+                    // bird hit the platform
+                    if (this.champion_ai.y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y){
+                        this.champion_ai.isAlive = false;
+                    }
+                    // bird hit ceiling
+                    else if (this.champion_ai.y <= - Params.game_manager.BIRD_RADIUS){
+                        this.champion_ai.isAlive = false;
+                    }
+                    // crashed into pipes
+                    else if (this.pipe_x_pos[this.nearest_pipe] - Params.game_manager.BIRD_INIT_X <= Params.game_manager.BIRD_RADIUS){
+
+                        // upper pipe
+                        if (this.champion_ai.y - Params.game_manager.BIRD_RADIUS <= this.pipe_y_height[this.nearest_pipe]){
+                            this.champion_ai.isAlive = false;
+                        }
+                        // lower pipe
+                        else if (this.champion_ai.y + Params.game_manager.BIRD_RADIUS >= this.pipe_y_height[this.nearest_pipe] + Params.game_manager.GAP_PIPE){
+                            this.champion_ai.isAlive = false;
+                        }
+
+                    }
+                }else{
+                    // move back the dead bodies
+                    this.champion_ai.x -= Params.game_manager.BIRD_X_SPEED;
+                }
+
+                if (this.champion_ai.y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y){
+                        this.champion_ai.y = Params.game_manager.PlATFORM_Y + Params.game_manager.BIRD_RADIUS;
+                }
+
             }
 
-            // prevent bird from going out of bound
+            // prevent birds from going out of bound
             if (this.solo_bird.y + Params.game_manager.BIRD_RADIUS >= Params.game_manager.PlATFORM_Y){
                 this.solo_bird.y = Params.game_manager.PlATFORM_Y + Params.game_manager.BIRD_RADIUS;
             }
+
+
+
         }else if (Params.game_manager.PLAY_MODE === 1){     // ai player
 
             this.generation.triggerFlap();
@@ -308,6 +370,31 @@ GameManager.prototype = {
                     self.startGame();                    
                 });
                 this.gameover = true;
+            }
+        }else{
+            // human vs ai
+            if(!this.gameover){
+                if (!this.champion_ai.isAlive && !this.solo_bird.isAlive){
+                    var self = this;
+                    setTimeout(function(){
+                        clearInterval(timer);
+                        self.startGame();                    
+                    });
+                    this.gameover = true;
+
+                    if (this.champion_ai.score > this.solo_bird.score){
+                        var appendix = ' (AI WON!)';
+                        frame_updater._lastcolour = 'darkblue';
+                    }else if (this.champion_ai.score < this.solo_bird.score){
+                        var appendix = ' (HUMAN WON!)';
+                        frame_updater._lastcolour = 'darkred';
+                    }else{
+                        var appendix = ' (DRAW!)';
+                        frame_updater._lastcolour = 'darkgreen';
+                    }
+
+                    frame_updater._lastmsg = 'Score: Human - ' + this.solo_bird.score.toString() + ', AI - ' + this.champion_ai.score.toString() + appendix;
+                }
             }
         }
     },

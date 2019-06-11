@@ -33,7 +33,7 @@ AssetManager.loadComplete = function(){
 
     // detect spacebar keystroke
     document.body.onkeydown = function(e){
-        if(e.keyCode == 32 && Params.game_manager.PLAY_MODE === 0){
+        if(e.keyCode == 32 && (Params.game_manager.PLAY_MODE === 0 || Params.game_manager.PLAY_MODE === 2)){
             if (game_manager.gameover){
                 game_manager.gameover = false;
                 game_manager.startGame();

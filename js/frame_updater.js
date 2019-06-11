@@ -32,6 +32,8 @@ var AssetManager = {
 function FrameUpdater(){
     this._canvas = document.getElementById("canvas").getContext("2d");
     this._platform = [];
+    this._lastmsg = 'Red: Human, Blue: AI';
+    this._lastcolour = 'darkgreen';
 }
 
 FrameUpdater.prototype = {
@@ -52,7 +54,10 @@ FrameUpdater.prototype = {
         this._drawScore();
 
         if(Params.game_manager.PLAY_MODE === 0 && game_manager.gameover)
-            this._drawText();
+            this._drawText("Hit 'Spacebar' to Begin!", 'darkgreen');
+
+        if(Params.game_manager.PLAY_MODE === 2 && game_manager.gameover)
+            this._drawText(this._lastmsg, this._lastcolour);
 
         // visualize brain if its AI
         if(Params.game_manager.PLAY_MODE >= 1){
@@ -172,7 +177,7 @@ FrameUpdater.prototype = {
     },
 
     _drawBird: function(){
-        if (Params.game_manager.PLAY_MODE === 0){   // human player
+        if (Params.game_manager.PLAY_MODE === 0 || Params.game_manager.PLAY_MODE === 2){   // human player
             this._canvas.save();
             this._canvas.translate(game_manager.solo_bird.x, game_manager.solo_bird.y);
             if (!game_manager.gameover){
@@ -180,6 +185,18 @@ FrameUpdater.prototype = {
             }
             this._canvas.drawImage(AssetManager.getImg("red_bird"), -24, -24);
             this._canvas.restore();
+
+            if (Params.game_manager.PLAY_MODE === 2){
+                this._canvas.save();
+                this._canvas.translate(game_manager.champion_ai.x, game_manager.champion_ai.y);
+                if (!game_manager.gameover){
+                    this._canvas.rotate(Math.min(game_manager.champion_ai.speed * 7, 90) * Math.PI /180);
+                }
+                this._canvas.globalAlpha = 0.7;
+                this._canvas.drawImage(AssetManager.getImg("blue_bird"), -24, -24);
+                this._canvas.restore();                
+            }
+
         }else if (Params.game_manager.PLAY_MODE === 1){     // ai player
 
             for (var i = 0; i < Constant.POPULATION; i++){
@@ -218,10 +235,10 @@ FrameUpdater.prototype = {
         }
     },
 
-    _drawText: function(){
+    _drawText: function(msg,colour){
         this._canvas.font = "25px Arial";
-        this._canvas.fillStyle = "darkgreen";
-        this._canvas.fillText("Hit 'Spacebar' to Begin!", Params.frame_updater.TEXT_DISPLAY_X, Params.frame_updater.TEXT_DISPLAY_Y);
+        this._canvas.fillStyle = colour;
+        this._canvas.fillText(msg, Params.frame_updater.TEXT_DISPLAY_X, Params.frame_updater.TEXT_DISPLAY_Y);
     },
 
     _movePlatform: function(){
