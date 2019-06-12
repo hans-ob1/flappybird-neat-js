@@ -12,8 +12,13 @@ var Params = {
         SCORE_DISPLAY_GAP: 2,
 
         // text
-        TEXT_DISPLAY_Y: 250,
+        TEXT_DISPLAY_Y: 230,
         TEXT_DISPLAY_X: 200,
+        TEXT_DISPLAY_OFFSET: 40,
+
+        LABEL_DISPLAY_Y: 380,
+        LABEL_DISPLAY_X: 550,
+        LABEL_DISPLAY_OFFSET: 30
     },
 
     game_manager: {
@@ -27,7 +32,7 @@ var Params = {
         // adversarial params
         ADVERSE_MODE: 0,                // 1 - ON, 0 - OFF
         MOVE_PIPE_PROB: 0.5,
-        PIPE_SPACING_PERCENTAGE: 0.4, // relative to screen width 
+        PIPE_SPACING_PERCENTAGE: 0.3, // relative to screen width 
         PIPE_Y_SPEED: 3,
 
         PlATFORM_Y: 495,
@@ -35,7 +40,7 @@ var Params = {
         BIRD_INIT_X: 100,
         BIRD_INIT_Y: 200,
         BIRD_RADIUS: 12,
-        BIRD_Y_SPEED: 4.5,
+        BIRD_Y_SPEED: 4.2,
         BIRD_X_SPEED: 2, // x-coord of the bird
 
         BIRD_HOVER_MAX_Y: 250,

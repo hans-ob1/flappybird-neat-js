@@ -32,8 +32,8 @@ var AssetManager = {
 function FrameUpdater(){
     this._canvas = document.getElementById("canvas").getContext("2d");
     this._platform = [];
-    this._lastmsg = 'Red: Human, Blue: AI';
-    this._lastcolour = 'darkgreen';
+    this._lastmsg = ['Red: Human (Hit SPACE to Begin)', 'Blue: Champion AI'];
+    this._lastcolour = ['darkred','darkblue'];
 }
 
 FrameUpdater.prototype = {
@@ -54,14 +54,19 @@ FrameUpdater.prototype = {
         this._drawScore();
 
         if(Params.game_manager.PLAY_MODE === 0 && game_manager.gameover)
-            this._drawText("Hit 'Spacebar' to Begin!", 'darkgreen');
+            this._drawBanner(["Hit 'Spacebar' to Begin!"], ['darkgreen']);
 
-        if(Params.game_manager.PLAY_MODE === 2 && game_manager.gameover)
-            this._drawText(this._lastmsg, this._lastcolour);
+        if(Params.game_manager.PLAY_MODE === 2 && game_manager.gameover){
+            this._drawBanner(this._lastmsg, this._lastcolour);
+        }
 
         // visualize brain if its AI
-        if(Params.game_manager.PLAY_MODE >= 1){
+        if(Params.game_manager.PLAY_MODE >= 1 && !game_manager.gameover){
             this._drawBrainVisual();
+
+            // display generation number
+            var display_label = 'Generation: ' + game_manager.generation.gen_num.toString();
+            this._drawLabel([display_label],['mediumblue']);
         }
     },
 
@@ -166,10 +171,25 @@ FrameUpdater.prototype = {
                 for(var j = 0; j < edge_idx_array_to.length; j++){
                     var idx_to = edge_idx_array_to[j];
 
-                    this._canvas.beginPath();
-                    this._canvas.moveTo(_nodes_pos[idx_from][0], _nodes_pos[idx_from][1]);
-                    this._canvas.lineTo(_nodes_pos[idx_to][0], _nodes_pos[idx_to][1]);
-                    this._canvas.stroke();                   
+                    if (parseInt(idx_from,10) >= _nodes_pos.length){
+                        idx_from = _nodes_pos.length - 1;
+                    }
+
+                    if (parseInt(idx_to,10) >= _nodes_pos.length){
+                        idx_to = _nodes_pos.length - 1;
+                    }
+
+
+                    if (_nodes_pos[idx_to] && _nodes_pos[idx_from]){
+                        this._canvas.beginPath();
+                        this._canvas.moveTo(_nodes_pos[idx_from][0], _nodes_pos[idx_from][1]);
+                        this._canvas.lineTo(_nodes_pos[idx_to][0], _nodes_pos[idx_to][1]);
+                        this._canvas.stroke();   
+                    }else{
+                        console.log(idx_from);
+                        console.log(idx_to);
+                        console.log(_nodes_pos);
+                    }             
                 }
             }
 
@@ -235,10 +255,20 @@ FrameUpdater.prototype = {
         }
     },
 
-    _drawText: function(msg,colour){
-        this._canvas.font = "25px Arial";
-        this._canvas.fillStyle = colour;
-        this._canvas.fillText(msg, Params.frame_updater.TEXT_DISPLAY_X, Params.frame_updater.TEXT_DISPLAY_Y);
+    _drawBanner: function(msg, colour){
+        this._canvas.font = "bold 20px Arial";
+        for (var i = 0; i < colour.length; i++){
+            this._canvas.fillStyle = colour[i];
+            this._canvas.fillText(msg[i], Params.frame_updater.TEXT_DISPLAY_X, Params.frame_updater.TEXT_DISPLAY_Y + i*Params.frame_updater.TEXT_DISPLAY_OFFSET);
+        }
+    },
+
+    _drawLabel: function(msg, colour){
+        this._canvas.font = "bold 10px Arial";
+        for (var i = 0; i < colour.length; i++){
+            this._canvas.fillStyle = colour[i];
+            this._canvas.fillText(msg[i], Params.frame_updater.LABEL_DISPLAY_X, Params.frame_updater.LABEL_DISPLAY_Y + i*Params.frame_updater.LABEL_DISPLAY_OFFSET);
+        }
     },
 
     _movePlatform: function(){

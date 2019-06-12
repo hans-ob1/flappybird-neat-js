@@ -382,18 +382,22 @@ GameManager.prototype = {
                     });
                     this.gameover = true;
 
+                    var colour = ['darkred','darkblue']
                     if (this.champion_ai.score > this.solo_bird.score){
-                        var appendix = ' (AI WON!)';
-                        frame_updater._lastcolour = 'darkblue';
+                        var appendix = 'AI WON!';
+                        colour.push('blue');
                     }else if (this.champion_ai.score < this.solo_bird.score){
-                        var appendix = ' (HUMAN WON!)';
-                        frame_updater._lastcolour = 'darkred';
+                        var appendix = 'HUMAN WON!';
+                        colour.push('red');
                     }else{
-                        var appendix = ' (DRAW!)';
-                        frame_updater._lastcolour = 'darkgreen';
+                        var appendix = 'DRAW!';
+                        colour.push('green');
                     }
 
-                    frame_updater._lastmsg = 'Score: Human - ' + this.solo_bird.score.toString() + ', AI - ' + this.champion_ai.score.toString() + appendix;
+                    frame_updater._lastcolour = colour;
+                    frame_updater._lastmsg = ['Human - ' + this.solo_bird.score.toString(), 
+                                              'AI - ' + this.champion_ai.score.toString(), 
+                                              'Result: ' + appendix];
                 }
             }
         }

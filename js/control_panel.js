@@ -11,8 +11,8 @@ function ControlPanel(){
             }else{
                 Params.game_manager.PLAY_MODE = 2;
 
-                frame_updater._lastmsg = 'Red: Human, Blue: AI';
-                frame_updater._lastcolour = 'darkgreen';
+                frame_updater._lastmsg = ['Red: Human (Hit SPACE to Begin)', 'Blue: Champion AI'];;
+                frame_updater._lastcolour = ['darkred','darkblue'];
             }
             game_manager._resetGame();
         });
